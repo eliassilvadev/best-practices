@@ -15,7 +15,7 @@ namespace Best.Practices.Core.Domain.Models
             State = EntityState.New;
         }
 
-        public virtual void SetStateAsUpdated()
+        public void SetStateAsUpdated()
         {
             if ((State == EntityState.Unchanged) ||
                 (State == EntityState.Persisted))
@@ -24,7 +24,7 @@ namespace Best.Practices.Core.Domain.Models
             }
         }
 
-        public virtual void SetStateAsDeleted()
+        public void SetStateAsDeleted()
         {
             if (State != EntityState.New)
             {
