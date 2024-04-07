@@ -1,8 +1,9 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
+using Best.Practices.Core.Domain.Models.Interfaces;
 
 namespace Best.Practices.Core.Domain.Models
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity : IBaseEntity
     {
         public Guid Id { get; protected set; }
         public EntityState State { get; protected set; }
@@ -15,7 +16,7 @@ namespace Best.Practices.Core.Domain.Models
             State = EntityState.New;
         }
 
-        public virtual void SetStateAsUpdated()
+        public void SetStateAsUpdated()
         {
             if ((State == EntityState.Unchanged) ||
                 (State == EntityState.Persisted))
@@ -24,7 +25,7 @@ namespace Best.Practices.Core.Domain.Models
             }
         }
 
-        public virtual void SetStateAsDeleted()
+        public void SetStateAsDeleted()
         {
             if (State != EntityState.New)
             {
