@@ -1,4 +1,4 @@
-﻿using Best.Practices.Core.Cqrs;
+﻿using Best.Practices.Core.Domain.Cqrs;
 
 namespace Best.Practices.Core.UnitOfWork.Interfaces
 {
