@@ -1,4 +1,5 @@
-﻿using Best.Practices.Core.Domain.Cqrs.CommandProvider;
+﻿using Best.Practices.Core.Domain.Cqrs;
+using Best.Practices.Core.Domain.Cqrs.CommandProvider;
 using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Domain.Repositories.Interfaces;
@@ -10,47 +11,33 @@ namespace Best.Practices.Core.Domain.Repositories
     {
         private readonly ICqrsCommandProvider<Entity> _commandProvider;
 
+        private readonly Dictionary<EntityState, Func<Entity, IEntityCommand>> _persistenceMethods = [];
+
         protected Repository(
             ICqrsCommandProvider<Entity> commandProvider)
         {
             _commandProvider = commandProvider;
-        }
-        public virtual bool Persist(Entity entity, IUnitOfWork unitOfWork)
-        {
-            switch (entity.State)
-            {
-                case EntityState.New:
-                    {
-                        unitOfWork.AddComand(_commandProvider.GetAddCommand(entity));
-                        break;
-                    };
-                case EntityState.Unchanged:
-                case EntityState.Persisted:
-                    {
-                        break;
-                    };
-                case EntityState.Updated:
-                    {
-                        unitOfWork.AddComand(_commandProvider.GetUpdateCommand(entity));
-                        break;
-                    };
-                case EntityState.Deleted:
-                case EntityState.PersistedDeleted:
-                    {
-                        unitOfWork.AddComand(_commandProvider.GetDeleteCommand(entity));
-                        break;
-                    };
-            };
 
-            return true;
+            _persistenceMethods[EntityState.New] = _commandProvider.GetAddCommand;
+            _persistenceMethods[EntityState.Updated] = _commandProvider.GetUpdateCommand;
+            _persistenceMethods[EntityState.Deleted] = _commandProvider.GetDeleteCommand;
+            _persistenceMethods[EntityState.PersistedDeleted] = _commandProvider.GetDeleteCommand;
+        }
+
+        public virtual void Persist(Entity entity, IUnitOfWork unitOfWork)
+        {
+            var persistenceMethod = _persistenceMethods.GetValueOrDefault(entity.State);
+
+            if (persistenceMethod is not null)
+                unitOfWork.AddComand(persistenceMethod(entity));
         }
 
         public virtual Entity GetById(Guid id)
         {
-            return HandleBeforeGetFromCommandProvider(_commandProvider.GetById(id));
+            return HandleAfterGetFromCommandProvider(_commandProvider.GetById(id));
         }
 
-        protected virtual T HandleBeforeGetFromCommandProvider<T>(T entity) where T : IBaseEntity
+        protected virtual T HandleAfterGetFromCommandProvider<T>(T entity) where T : IBaseEntity
         {
             if (entity is null)
                 return default;
@@ -58,26 +45,6 @@ namespace Best.Practices.Core.Domain.Repositories
             entity.SetStateAsUnchanged();
 
             return entity;
-        }
-
-        protected virtual void HandleBeforeGetFromCommandProvider(IList<Entity> entities)
-        {
-            foreach (var entity in entities)
-            {
-                Entity entityToHandle = entity;
-
-                entityToHandle = HandleBeforeGetFromCommandProvider(entityToHandle);
-            }
-        }
-
-        protected virtual void HandleEntitiesBeforeGetFromCommandProvider<T>(IList<T> entities) where T : IBaseEntity
-        {
-            foreach (var entity in entities)
-            {
-                T entityToHandle = entity;
-
-                entityToHandle = HandleBeforeGetFromCommandProvider(entityToHandle);
-            }
         }
     }
 }
