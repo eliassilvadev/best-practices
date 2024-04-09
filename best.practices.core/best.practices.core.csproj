@@ -7,10 +7,7 @@
 
   <ItemGroup>
     <Folder Include="Application\" />
-    <Folder Include="Common\" />
     <Folder Include="Domain\Services\" />
-    <Folder Include="Domain\Repositories\" />
-    <Folder Include="Exceptions\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 
