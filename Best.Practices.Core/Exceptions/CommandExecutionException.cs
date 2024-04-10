@@ -10,5 +10,10 @@ namespace Best.Practices.Core.Exceptions
         public CommandExecutionException(string message) : base(message)
         {
         }
+
+        public CommandExecutionException(IList<ErrorMessage> errors)
+           : base(errors)
+        {
+        }
     }
 }

@@ -16,12 +16,8 @@ namespace Best.Practices.Core.Tests.Domain.Repositories
         {
         }
 
-        public class ChildRepositoryTest : Repository<IBaseEntity>
+        public class ChildRepositoryTest(ICqrsCommandProvider<IBaseEntity> commandProvider) : Repository<IBaseEntity>(commandProvider)
         {
-            public ChildRepositoryTest(ICqrsCommandProvider<IBaseEntity> commandProvider)
-                : base(commandProvider)
-            {
-            }
         }
 
         private readonly ChildRepositoryTest _repository;

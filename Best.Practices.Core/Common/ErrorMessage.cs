@@ -4,20 +4,38 @@
     {
         public ErrorMessage(string message)
         {
-            Message = message;
+            var errorMessage = ConvertMessageToErrorMessage(message);
 
-            if (Message.Contains(';'))
-            {
-                var messageParts = Message.Split(';');
-
-                Code = messageParts[0];
-                Message = messageParts[1];
-            }
+            Code = errorMessage.Code;
+            Message = errorMessage.Message;
         }
         public ErrorMessage(string code, string message)
         {
             Code = code;
             Message = message;
+        }
+
+        public static ErrorMessage ConvertMessageToErrorMessage(string message)
+        {
+            var code = CommonConstants.ErrorCodes.DefaulErrorCode;
+            var errorMessage = message;
+
+            if (message.Contains(CommonConstants.ErroMessageSeparator))
+            {
+                var messageParts = message.Split(CommonConstants.ErroMessageSeparator);
+
+                code = messageParts[0];
+                errorMessage = messageParts[1];
+            }
+
+            return new ErrorMessage(code, errorMessage);
+        }
+
+        public static string GetErrorCodeFromMessage(string message)
+        {
+            var errorMessage = ConvertMessageToErrorMessage(message);
+
+            return errorMessage.Code;
         }
         public string Code { get; set; }
 
