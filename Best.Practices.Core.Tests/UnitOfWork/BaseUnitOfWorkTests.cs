@@ -5,16 +5,20 @@ using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.UnitOfWork;
 using FluentAssertions;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace Best.Practices.Core.Tests.UnitOfWork
 {
     public class BaseUnitOfWorkTests
     {
+
+        [ExcludeFromCodeCoverage]
         public class ChildClassTest : BaseEntity
         {
         }
 
+        [ExcludeFromCodeCoverage]
         public class ChildUnitOfWorkTest : BaseUnitOfWork
         {
             public override void Dispose()

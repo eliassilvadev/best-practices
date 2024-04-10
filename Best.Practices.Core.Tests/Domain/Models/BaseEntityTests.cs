@@ -1,12 +1,15 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models;
 using FluentAssertions;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace Best.Practices.Core.Tests.Domain.Models
 {
     public class BaseEntityTests
     {
+
+        [ExcludeFromCodeCoverage]
         private class ChildClassTest : BaseEntity
         {
         }
