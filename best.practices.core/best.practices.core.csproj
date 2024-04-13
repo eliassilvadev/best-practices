@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Application\" />
     <Folder Include="Domain\Services\" />
     <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
   </ItemGroup>
 
 </Project>

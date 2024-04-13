@@ -1,4 +1,5 @@
-﻿namespace Best.Practices.Core.Common
+﻿
+namespace Best.Practices.Core.Common
 {
     public class ErrorMessage
     {
@@ -20,9 +21,9 @@
             var code = CommonConstants.ErrorCodes.DefaulErrorCode;
             var errorMessage = message;
 
-            if (message.Contains(CommonConstants.ErroMessageSeparator))
+            if (message.Contains(CommonConstants.ErrorMessageSeparator))
             {
-                var messageParts = message.Split(CommonConstants.ErroMessageSeparator);
+                var messageParts = message.Split(CommonConstants.ErrorMessageSeparator);
 
                 code = messageParts[0];
                 errorMessage = messageParts[1];
@@ -43,7 +44,7 @@
 
         public override string ToString()
         {
-            return Code + Message;
+            return Code + CommonConstants.StringSpace + Message;
         }
     }
 }

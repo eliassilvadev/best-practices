@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Application\" />
+    <Folder Include="Application\Dtos\Validators\" />
     <Folder Include="Domain\Services\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
