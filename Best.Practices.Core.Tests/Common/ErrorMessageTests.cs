@@ -25,7 +25,7 @@ namespace Best.Practices.Core.Tests.Common
         public void Constructor_GivenAStringMessageWithoutSeparatorAndCode_ReturnsErrorMessage()
         {
             //Act
-            var exception = new ErrorMessage($"999{CommonConstants.ErroMessageSeparator}Error message test");
+            var exception = new ErrorMessage($"999{CommonConstants.ErrorMessageSeparator}Error message test");
 
             // Assert
             exception.Code.Should().Be("999");

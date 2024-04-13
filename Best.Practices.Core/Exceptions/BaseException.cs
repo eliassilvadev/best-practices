@@ -27,7 +27,7 @@ namespace Best.Practices.Core.Exceptions
         {
             var message = new StringBuilder();
 
-            for (int i = 0; i < errors.Count; i++)
+            for (int i = CommonConstants.ZeroBasedFirstIndex; i < errors.Count; i++)
             {
                 var errorMessage = errors[i];
 
