@@ -3,6 +3,7 @@ using Best.Practices.Core.Application.Dtos.Output;
 using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Cqrs.QueryProvider;
 using Best.Practices.Core.Exceptions;
+using Best.Practices.Core.Extensions;
 using FluentValidation;
 
 namespace Best.Practices.Core.Application.UseCases
@@ -25,19 +26,19 @@ namespace Best.Practices.Core.Application.UseCases
         {
             _inputValidator.ValidateAndThrow(input);
 
-            var results = _queryProvider.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage);
+            var resultsInPage = _queryProvider.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage);
 
             var resultsCount = _queryProvider.Count(input.Filters);
 
             var maxPage = (int)(resultsCount / input.ItemsPerPage);
             var remainder = (resultsCount % input.ItemsPerPage);
 
-            maxPage += ((remainder > CommonConstants.CountZeroItems) ? CommonConstants.FirstIndex : CommonConstants.ZeroBasedFirstIndex);
+            maxPage += ((remainder > CommonConstants.QuantityZeroItems) ? CommonConstants.FirstIndex : CommonConstants.ZeroBasedFirstIndex);
 
-            if ((resultsCount > CommonConstants.CountZeroItems) && (input.PageNumber > maxPage))
-                throw new InvalidInputException(string.Format(CommonConstants.ErrorMessages.PageNumberMustBeLessOrEqualMaxPage, maxPage));
+            if ((resultsCount > CommonConstants.QuantityZeroItems) && (input.PageNumber > maxPage))
+                throw new InvalidInputException(CommonConstants.ErrorMessages.PageNumberMustBeLessOrEqualMaxPage.Format(maxPage));
 
-            return CreateSuccessOutput(new PaginatedOutput<Output>(input.PageNumber, maxPage, results));
+            return CreateSuccessOutput(new PaginatedOutput<Output>(input.PageNumber, maxPage, resultsCount, resultsInPage));
         }
     }
 }

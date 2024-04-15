@@ -1,5 +1,7 @@
 ﻿using Best.Practices.Core.Application.UseCases;
+using Best.Practices.Core.Extensions;
 using Best.Practices.Core.Tests.Application.SampleUseCasesDtos;
+using Best.Practices.Core.Tests.Common;
 using Best.Practices.Core.Tests.Domain.Models;
 using Best.Practices.Core.Tests.Domain.Repositories.SampleRepository;
 using Best.Practices.Core.UnitOfWork.Interfaces;
@@ -22,22 +24,26 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
         {
             ThrowsInvalidInputIfEntityExists(
                 _sampleRepository.GetBySampleName,
-                input.SampleName, $"A entity with SampleName {input.SampleName} already Exists");
+                input.SampleName, CommonTestContants.EntityWithNameAlreadyExists.Format(input.SampleName));
 
             ThrowsResourceNotFoundIfEntityDoesNotExists(
                 _sampleRepository.GetById,
-                input.SampleLookUpId, $"A lookup entity with id {input.SampleLookUpId} does not Exists", out var lookupEntity);
+                input.SampleLookUpId, CommonTestContants.EntityWithIdDoesNotExists.Format(input.SampleLookUpId), out var lookupEntity);
 
             var entity = new SampleEntity()
             {
-                SampleName = input.SampleName
+                SampleName = input.SampleName + lookupEntity.SampleName
             };
 
             _sampleRepository.Persist(entity, UnitOfWork);
 
             SaveChanges();
 
-            return CreateSuccessOutput(new SampleChildUseCaseOutput(entity));
+            return CreateSuccessOutput(new SampleChildUseCaseOutput()
+            {
+                SampleId = entity.Id,
+                SampleName = entity.SampleName,
+            });
         }
     }
 }

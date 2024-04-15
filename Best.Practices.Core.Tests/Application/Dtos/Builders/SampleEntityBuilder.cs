@@ -19,7 +19,7 @@ namespace Best.Practices.Core.Tests.Application.Dtos.Builders
 
         public SampleEntity Build()
         {
-            return new SampleEntity
+            return new SampleEntity()
             {
                 SampleName = _sampleName
             };

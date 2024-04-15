@@ -5,7 +5,7 @@
         public static readonly char ErrorMessageSeparator = ';';
         public static readonly int ZeroBasedFirstIndex = 0;
         public static readonly int FirstIndex = 1;
-        public static readonly int CountZeroItems = 0;
+        public static readonly int QuantityZeroItems = 0;
         public static readonly string StringSpace = " ";
         public static readonly char CharSpace = ' ';
 
