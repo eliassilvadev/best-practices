@@ -24,6 +24,8 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
 
             var entity = _sampleRepository.GetById(input.SampleId);
 
+            entity.SetMonthlySalary(input.MonthlySalary);
+
             var sucess = entity is not null;
 
             return CreateSuccessOutput(sucess);

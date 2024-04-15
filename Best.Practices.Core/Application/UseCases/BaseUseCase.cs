@@ -34,10 +34,10 @@ namespace Best.Practices.Core.Application.UseCases
             }
             catch (FluentValidation.ValidationException ex)
             {
-                if (ex.Errors.Count() > 0)
+                if (ex.Errors.Any())
                     output = CreateOutputWithErrors(ex.Errors.Select(e => new ErrorMessage(e.ErrorMessage)).ToList());
                 else
-                    output = CreateOutputWithErrors(new List<ErrorMessage>() { new(ex.Message) });
+                    output = CreateOutputWithErrors([new(ex.Message)]);
 
             }
             catch (BaseException ex)
@@ -46,7 +46,7 @@ namespace Best.Practices.Core.Application.UseCases
             }
             catch (Exception ex)
             {
-                output = CreateOutputWithErrors(new List<ErrorMessage>() { new(ex.Message) });
+                output = CreateOutputWithErrors([new(ex.Message)]);
             }
 
             return output;

@@ -7,12 +7,14 @@ namespace Best.Practices.Core.Tests.Application.Dtos.Builders
         private Guid _sampleId;
         private Guid _sampleLookUpId;
         private string _sampleName;
+        private decimal _monthlySalary;
 
         public SampleChildUseCaseInputBuilder()
         {
             _sampleId = Guid.NewGuid();
             _sampleLookUpId = Guid.NewGuid();
             _sampleName = "Sample Name";
+            _monthlySalary = 1000m;
         }
 
         public SampleChildUseCaseInputBuilder WithSampleId(Guid sampleId)
@@ -33,13 +35,20 @@ namespace Best.Practices.Core.Tests.Application.Dtos.Builders
             return this;
         }
 
+        public SampleChildUseCaseInputBuilder WithMonthlySalary(decimal monthlySalary)
+        {
+            _monthlySalary = monthlySalary;
+            return this;
+        }
+
         public SampleChildUseCaseInput Build()
         {
             return new SampleChildUseCaseInput
             {
                 SampleId = _sampleId,
                 SampleLookUpId = _sampleLookUpId,
-                SampleName = _sampleName
+                SampleName = _sampleName,
+                MonthlySalary = _monthlySalary
             };
         }
     }

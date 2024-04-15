@@ -1,5 +1,4 @@
 ﻿using Best.Practices.Core.Common;
-using System.Text;
 
 namespace Best.Practices.Core.Application.UseCases
 {
@@ -25,18 +24,6 @@ namespace Best.Practices.Core.Application.UseCases
             {
                 return Errors != null && Errors.Count > 0;
             }
-        }
-
-        public override string ToString()
-        {
-            var errorMessage = new StringBuilder();
-
-            foreach (var error in Errors)
-            {
-                errorMessage.AppendLine(error.ToString());
-            }
-
-            return errorMessage.ToString();
         }
     }
 }

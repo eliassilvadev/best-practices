@@ -2,7 +2,7 @@
 
 namespace Best.Practices.Core.Application.Dtos.Input
 {
-    public class SearchFilterInput
+    public record SearchFilterInput
     {
         public FilterType FilterType { get; set; }
 
