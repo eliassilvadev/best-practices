@@ -12,6 +12,30 @@ namespace Best.Practices.Core.Tests.Domain.Models
         [ExcludeFromCodeCoverage]
         private class ChildClassTest : BaseEntity
         {
+            public string SampleName { get; set; }
+        }
+
+        [ExcludeFromCodeCoverage]
+        private class AgregatedRoot : BaseEntity
+        {
+            public string SampleName { get; set; }
+            public ChildClassLevel2 ChildClassLevel2 { get; set; }
+        }
+
+        [ExcludeFromCodeCoverage]
+        private class ChildClassLevel2 : BaseEntity
+        {
+            public string SampleName { get; set; }
+
+            public ChildClassLevel3 ChildClassLevel3 { get; set; }
+        }
+
+        [ExcludeFromCodeCoverage]
+        private class ChildClassLevel3 : BaseEntity
+        {
+            public string SampleName { get; set; }
+
+            public AgregatedRoot ChildClassLevel1 { get; set; }
         }
 
         [Fact]
@@ -311,6 +335,141 @@ namespace Best.Practices.Core.Tests.Domain.Models
 
             //Assert
             childClass.State.Should().Be(EntityState.Deleted);
+        }
+
+        [Fact]
+        public void EntityClone_Always_ShouldReturnANewEntity()
+        {
+            //Arrange
+            var childClass = new ChildClassTest()
+            {
+                SampleName = "Name Test"
+            };
+
+            childClass.SetStateAsUnchanged();
+
+            //Act
+            var cloneEntity = (ChildClassTest)childClass.EntityClone();
+
+            //Assert
+            cloneEntity.Id.Should().NotBe(childClass.Id);
+            cloneEntity.State.Should().Be(EntityState.New);
+            cloneEntity.SampleName.Should().Be(childClass.SampleName);
+        }
+
+        [Fact]
+        public async Task EntityClone_GivenAnEntitySomeHierarchy_ShouldReturnANewEntity()
+        {
+            //Arrange
+            var agregatedRoot = new AgregatedRoot()
+            {
+                SampleName = "AgregatedRoot"
+            };
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            var childClassLevel2 = new ChildClassLevel2()
+            {
+                SampleName = "ChildClassLevel2"
+            };
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            var childClassLevel3 = new ChildClassLevel3()
+            {
+                SampleName = "ChildClassLevel3"
+            };
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            var childClassLevel1 = new AgregatedRoot()
+            {
+                SampleName = "ChildClassLevel3|Level1"
+            };
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            agregatedRoot.ChildClassLevel2 = childClassLevel2;
+            childClassLevel2.ChildClassLevel3 = childClassLevel3;
+            childClassLevel3.ChildClassLevel1 = childClassLevel1;
+
+            //Act
+            var cloneEntity = (AgregatedRoot)agregatedRoot.EntityClone();
+
+            //Assert
+            cloneEntity.Id.Should().NotBe(agregatedRoot.Id);
+            cloneEntity.State.Should().Be(EntityState.New);
+            cloneEntity.SampleName.Should().Be(agregatedRoot.SampleName);
+            cloneEntity.CreationDate.Should().NotBe(agregatedRoot.CreationDate);
+
+            cloneEntity.ChildClassLevel2.Id.Should().Be(agregatedRoot.ChildClassLevel2.Id);
+            cloneEntity.ChildClassLevel2.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.SampleName);
+            cloneEntity.ChildClassLevel2.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.CreationDate);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.Id);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.SampleName);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.CreationDate);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Id);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.SampleName);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.CreationDate);
+        }
+
+        [Fact]
+        public void EntityClone_GivenAnEntityWithCircularReference_ShouldReturnANewEntityWithCirclarReferenceIgnored()
+        {
+            //Arrange
+            var agregatedRoot = new AgregatedRoot()
+            {
+                SampleName = "AgregatedRoot",
+                ChildClassLevel2 = new ChildClassLevel2()
+                {
+                    SampleName = "ChildClassLevel2",
+                    ChildClassLevel3 = new ChildClassLevel3()
+                    {
+                        SampleName = "ChildClassLevel3"
+                    }
+                }
+            };
+
+            agregatedRoot.SetStateAsUnchanged();
+            agregatedRoot.SetStateAsDeleted();
+
+            agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1 = agregatedRoot; // circular reference
+
+            //Act
+            var cloneEntity = (AgregatedRoot)agregatedRoot.EntityClone();
+
+            //Assert
+            cloneEntity.Id.Should().NotBe(agregatedRoot.Id);
+            cloneEntity.State.Should().Be(EntityState.New);
+            cloneEntity.SampleName.Should().Be(agregatedRoot.SampleName);
+
+            cloneEntity.ChildClassLevel2.Id.Should().Be(agregatedRoot.ChildClassLevel2.Id);
+            cloneEntity.ChildClassLevel2.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.SampleName);
+            cloneEntity.ChildClassLevel2.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.CreationDate);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.Id);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.SampleName);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.CreationDate);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Should().BeNull();
+        }
+
+        [Fact]
+        public void Clone_Always_ShouldReturnANewEntity()
+        {
+            //Arrange
+            var childClass = new ChildClassTest()
+            {
+                SampleName = "Name Test"
+            };
+
+            childClass.SetStateAsUnchanged();
+
+            //Act
+            var cloneEntity = (ChildClassTest)childClass.Clone();
+
+            //Assert
+            cloneEntity.Id.Should().NotBe(childClass.Id);
+            cloneEntity.State.Should().Be(EntityState.New);
+            cloneEntity.SampleName.Should().Be(childClass.SampleName);
         }
     }
 }

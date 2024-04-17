@@ -1,5 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Extensions;
 
 namespace Best.Practices.Core.Domain.Models
 {
@@ -18,8 +19,7 @@ namespace Best.Practices.Core.Domain.Models
 
         public void SetStateAsUpdated()
         {
-            if ((State == EntityState.Unchanged) ||
-                (State == EntityState.Persisted))
+            if (State.In(EntityState.Unchanged, EntityState.Persisted))
             {
                 State = EntityState.Updated;
             }
@@ -54,6 +54,21 @@ namespace Best.Practices.Core.Domain.Models
         public void SetStateAsUnchanged()
         {
             State = EntityState.Unchanged;
+        }
+        public virtual IBaseEntity EntityClone()
+        {
+            var cloneEntity = (BaseEntity)this.DeepClone();
+
+            cloneEntity.Id = Guid.NewGuid();
+            cloneEntity.CreationDate = DateTime.UtcNow;
+            cloneEntity.State = EntityState.New;
+
+            return cloneEntity;
+        }
+
+        public virtual object Clone()
+        {
+            return EntityClone();
         }
     }
 }
