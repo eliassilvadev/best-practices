@@ -10,6 +10,8 @@ namespace Best.Practices.Core.Domain.Models.Interfaces
 
         EntityState State { get; }
 
+        IBaseEntity EntityClone();
+
         void SetStateAsUpdated();
 
         void SetStateAsDeleted();
