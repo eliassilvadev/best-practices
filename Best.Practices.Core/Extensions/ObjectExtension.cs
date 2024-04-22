@@ -2,15 +2,26 @@
 {
     public static class ObjectExtension
     {
-        public static bool In(this object inputValue, params object[] values)
+        public static bool In(this object inputObject, params object[] values)
         {
             foreach (var value in values)
             {
-                if (inputValue.Equals(value))
+                if (inputObject.Equals(value))
                     return true;
             }
 
             return false;
+        }
+
+        public static bool PropertyIsUpdated(this object inputObject, string propertyName, object propertyValue)
+        {
+            var objectType = inputObject.GetType();
+            var currentValue = objectType.GetProperty(propertyName).GetValue(inputObject, null);
+
+            return ((((propertyValue == null) && (currentValue != null)) ||
+                        ((propertyValue != null) && (currentValue == null))) ||
+                        ((propertyValue != null) && (currentValue != null) &&
+                        (!propertyValue.Equals(currentValue))));
         }
     }
 }

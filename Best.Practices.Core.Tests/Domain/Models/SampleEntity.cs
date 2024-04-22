@@ -6,7 +6,7 @@ namespace Best.Practices.Core.Tests.Domain.Models
 {
     public class SampleEntity : BaseEntity
     {
-        public string SampleName { get; set; }
+        public virtual string SampleName { get; set; }
         public decimal MonthlySalary { get; protected set; }
 
         public void SetMonthlySalary(decimal monthlySalary)

@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 
-namespace Best.Practices.Core.Configurations.JsonSerializar
+namespace Best.Practices.Core.Configurations.JsonSerializer
 {
     public class PrivateSetterContractResolver : DefaultContractResolver
     {
