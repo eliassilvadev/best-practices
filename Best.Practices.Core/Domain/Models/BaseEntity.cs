@@ -1,20 +1,89 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Extensions;
+using System.Collections;
 
 namespace Best.Practices.Core.Domain.Models
 {
     public abstract class BaseEntity : IBaseEntity
     {
-        public Guid Id { get; protected set; }
-        public EntityState State { get; protected set; }
-        public DateTime CreationDate { get; protected set; }
+        public virtual Guid Id { get; protected set; }
+        public virtual EntityState State { get; protected set; }
+        public virtual DateTime CreationDate { get; protected set; }
+        public virtual Dictionary<string, object> PersistedValues { get; protected set; }
+
+        public static T InstantiateANewEntity<T>() where T : BaseEntity, new()
+        {
+            var entity = new T();
+
+            entity.Id = Guid.NewGuid();
+            entity.CreationDate = DateTime.UtcNow;
+            entity.State = EntityState.New;
+
+            return entity;
+        }
+
+        public static T InstantiateAnExistentEntity<T>(Guid id, DateTime creationDate) where T : BaseEntity, new()
+        {
+            var entity = new T();
+
+            entity.Id = id;
+            entity.CreationDate = creationDate;
+            entity.State = EntityState.Unchanged;
+
+            return entity;
+        }
 
         protected BaseEntity()
         {
             Id = Guid.NewGuid();
             CreationDate = DateTime.UtcNow;
             State = EntityState.New;
+            PersistedValues = [];
+        }
+
+        protected void InitializePersistedValues(IBaseEntity entity)
+        {
+            var entityType = entity.GetType();
+
+            var properties = entityType.GetProperties()
+                .Where(x => !x.Name.In(nameof(PersistedValues), nameof(State)));
+
+            foreach (var property in properties)
+            {
+                object propertyValue = property.GetValue(entity, null);
+
+                if (propertyValue is not null)
+                {
+                    var propertyType = propertyValue.GetType();
+
+                    if (propertyType.IsSubclassOf(typeof(BaseEntity)))
+                    {
+                        var entityProperty = (BaseEntity)propertyValue;
+
+                        entityProperty.State = EntityState.Unchanged;
+
+                        InitializePersistedValues(entityProperty);
+                    }
+                    else if (propertyType.Name.Contains("IEntityList") || propertyType.Name.Contains("EntityList"))
+                    {
+                        var entityList = propertyValue as IList;
+
+                        foreach (var entityListItem in entityList)
+                        {
+                            var entityItem = (BaseEntity)entityListItem;
+
+                            entityItem.State = EntityState.Unchanged;
+
+                            InitializePersistedValues(entityItem);
+                        }
+                    }
+                    else
+                    {
+                        PersistedValues[property.Name] = propertyValue;
+                    }
+                }
+            }
         }
 
         public void SetStateAsUpdated()
@@ -54,6 +123,8 @@ namespace Best.Practices.Core.Domain.Models
         public void SetStateAsUnchanged()
         {
             State = EntityState.Unchanged;
+
+            InitializePersistedValues(this);
         }
         public virtual IBaseEntity EntityClone()
         {

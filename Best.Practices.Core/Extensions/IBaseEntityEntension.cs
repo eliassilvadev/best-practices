@@ -1,4 +1,4 @@
-﻿using Best.Practices.Core.Configurations.JsonSerializar;
+﻿using Best.Practices.Core.Configurations.JsonSerializer;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Newtonsoft.Json;
 
