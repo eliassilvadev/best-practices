@@ -8,34 +8,10 @@ namespace Best.Practices.Core.Tests.Domain.Models
 {
     public class BaseEntityTests
     {
-
         [ExcludeFromCodeCoverage]
         private class ChildClassTest : BaseEntity
         {
             public string SampleName { get; set; }
-        }
-
-        [ExcludeFromCodeCoverage]
-        private class AgregatedRoot : BaseEntity
-        {
-            public string SampleName { get; set; }
-            public ChildClassLevel2 ChildClassLevel2 { get; set; }
-        }
-
-        [ExcludeFromCodeCoverage]
-        private class ChildClassLevel2 : BaseEntity
-        {
-            public string SampleName { get; set; }
-
-            public ChildClassLevel3 ChildClassLevel3 { get; set; }
-        }
-
-        [ExcludeFromCodeCoverage]
-        private class ChildClassLevel3 : BaseEntity
-        {
-            public string SampleName { get; set; }
-
-            public AgregatedRoot ChildClassLevel1 { get; set; }
         }
 
         [Fact]
@@ -391,7 +367,7 @@ namespace Best.Practices.Core.Tests.Domain.Models
 
             agregatedRoot.ChildClassLevel2 = childClassLevel2;
             childClassLevel2.ChildClassLevel3 = childClassLevel3;
-            childClassLevel3.ChildClassLevel1 = childClassLevel1;
+            childClassLevel3.AgreegatedRoot = childClassLevel1;
 
             //Act
             var cloneEntity = (AgregatedRoot)agregatedRoot.EntityClone();
@@ -408,9 +384,9 @@ namespace Best.Practices.Core.Tests.Domain.Models
             cloneEntity.ChildClassLevel2.ChildClassLevel3.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.Id);
             cloneEntity.ChildClassLevel2.ChildClassLevel3.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.SampleName);
             cloneEntity.ChildClassLevel2.ChildClassLevel3.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.CreationDate);
-            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Id);
-            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.SampleName);
-            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.CreationDate);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.Id);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.SampleName);
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.CreationDate);
         }
 
         [Fact]
@@ -433,7 +409,7 @@ namespace Best.Practices.Core.Tests.Domain.Models
             agregatedRoot.SetStateAsUnchanged();
             agregatedRoot.SetStateAsDeleted();
 
-            agregatedRoot.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1 = agregatedRoot; // circular reference
+            agregatedRoot.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot = agregatedRoot; // circular reference
 
             //Act
             var cloneEntity = (AgregatedRoot)agregatedRoot.EntityClone();
@@ -449,7 +425,7 @@ namespace Best.Practices.Core.Tests.Domain.Models
             cloneEntity.ChildClassLevel2.ChildClassLevel3.Id.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.Id);
             cloneEntity.ChildClassLevel2.ChildClassLevel3.SampleName.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.SampleName);
             cloneEntity.ChildClassLevel2.ChildClassLevel3.CreationDate.Should().Be(agregatedRoot.ChildClassLevel2.ChildClassLevel3.CreationDate);
-            cloneEntity.ChildClassLevel2.ChildClassLevel3.ChildClassLevel1.Should().BeNull();
+            cloneEntity.ChildClassLevel2.ChildClassLevel3.AgreegatedRoot.Should().BeNull();
         }
 
         [Fact]
