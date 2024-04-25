@@ -10,6 +10,8 @@
         public static readonly char CharSpace = ' ';
         public static readonly char CharComma = ',';
         public static readonly char CharEnter = '\n';
+        public static readonly string StringComma = ",";
+        public static readonly string StringEnter = "\n";
 
         public static class ErrorCodes
         {

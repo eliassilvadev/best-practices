@@ -1,7 +1,7 @@
-﻿using Best.Practices.Core.Domain.Cqrs.CommandProvider;
+﻿using Best.Practices.Core.Domain.Cqrs.CommandProviders;
 using Best.Practices.Core.Tests.Domain.Models;
 
-namespace Best.Practices.Core.Tests.Domain.Cqrs
+namespace Best.Practices.Core.Tests.Domain.Cqrs.CommandProviders
 {
     public interface ISampleCqrsCommandProvider : ICqrsCommandProvider<SampleEntity>
     {

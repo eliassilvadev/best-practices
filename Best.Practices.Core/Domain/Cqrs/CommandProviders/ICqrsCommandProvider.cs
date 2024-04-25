@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Models.Interfaces;
 
-namespace Best.Practices.Core.Domain.Cqrs.CommandProvider
+namespace Best.Practices.Core.Domain.Cqrs.CommandProviders
 {
     public interface ICqrsCommandProvider<Entity> where Entity : IBaseEntity
     {

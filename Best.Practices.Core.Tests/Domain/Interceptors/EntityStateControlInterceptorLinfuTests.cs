@@ -128,7 +128,7 @@ namespace Best.Practices.Core.Tests.Domain.Interceptors
             var proxyEntity = interceptor.CreateEntityWihStateControl(agregatedRoot);
 
             //Act
-            int maxIterations = 1000000000;
+            int maxIterations = 1000000;
 
             var timeBeforeExecution = DateTime.Now.TimeOfDay;
 

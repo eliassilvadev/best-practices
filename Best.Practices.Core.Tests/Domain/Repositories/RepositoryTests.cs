@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Domain.Cqrs;
-using Best.Practices.Core.Domain.Cqrs.CommandProvider;
+using Best.Practices.Core.Domain.Cqrs.CommandProviders;
 using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models;
 using Best.Practices.Core.Domain.Models.Interfaces;
