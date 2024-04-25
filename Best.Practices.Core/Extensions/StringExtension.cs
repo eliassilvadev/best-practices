@@ -6,5 +6,10 @@
         {
             return string.Format(inputString, values);
         }
+
+        public static bool IsEmpty(this string inputString)
+        {
+            return string.IsNullOrWhiteSpace(inputString);
+        }
     }
 }

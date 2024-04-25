@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>Elias Silva</Authors>
+    <PackageProjectUrl>https://github.com/eliassilvadev/best-practices</PackageProjectUrl>
+    <PackageTags>Clean Architecture, DDD</PackageTags>
   </PropertyGroup>
 	
   <ItemGroup>

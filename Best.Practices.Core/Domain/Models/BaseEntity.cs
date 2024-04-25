@@ -86,6 +86,52 @@ namespace Best.Practices.Core.Domain.Models
             }
         }
 
+        public bool PropertyIsUpdated(object propertyOldValue, object propertyNewValue)
+        {
+            return ((((propertyOldValue == null) && (propertyNewValue != null)) ||
+                        ((propertyOldValue != null) && (propertyNewValue == null))) ||
+                        ((propertyOldValue != null) && (propertyNewValue != null) &&
+                        (!propertyOldValue.Equals(propertyNewValue))));
+        }
+
+        public virtual Dictionary<string, object> GetUpdatedProperties()
+        {
+            var objectType = GetType();
+            var properties = objectType.GetProperties()
+                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues)));
+
+            var updatedProperties = new Dictionary<string, object>();
+
+            foreach (var property in properties)
+            {
+                var oldPropertyValue = PersistedValues[property.Name];
+                var currentValue = property.GetValue(this, null);
+
+                if (this.PropertyIsUpdated(oldPropertyValue, currentValue))
+                    updatedProperties[property.Name] = currentValue;
+            }
+
+            return updatedProperties;
+        }
+
+        public virtual Dictionary<string, object> GetInsertableProperties()
+        {
+            var objectType = GetType();
+            var properties = objectType.GetProperties()
+                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues)));
+
+            var insertableProperties = new Dictionary<string, object>();
+
+            foreach (var property in properties)
+            {
+                var propertyValue = property.GetValue(this, null);
+
+                insertableProperties[property.Name] = propertyValue;
+            }
+
+            return insertableProperties;
+        }
+
         public void SetStateAsUpdated()
         {
             if (State.In(EntityState.Unchanged, EntityState.Persisted))

@@ -25,9 +25,27 @@ namespace Best.Practices.Core.UnitOfWork
             }
         }
 
+        public virtual bool BeforeSave()
+        {
+            return true;
+        }
+
+        public virtual bool AfterSave(bool sucess)
+        {
+            return sucess;
+        }
+
+        public virtual void AfterRollBack()
+        {
+        }
+
         public virtual bool SaveChanges()
         {
-            var sucess = true;
+            bool sucess = BeforeSave();
+
+            if (!sucess)
+                return false;
+
             try
             {
                 foreach (var command in Commands)
@@ -44,6 +62,8 @@ namespace Best.Practices.Core.UnitOfWork
             }
             finally
             {
+                sucess = sucess && AfterSave(sucess);
+
                 if (sucess)
                     SetEntitiesPersistedState();
 

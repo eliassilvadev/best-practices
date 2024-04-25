@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core", "Best
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Tests", "Best.Practices.Core.Tests\Best.Practices.Core.Tests.csproj", "{CB7DBFC8-E4EB-438F-B0CE-569A643226C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Best.Practices.Core.CommandProvider.Dapper", "Best.Practices.Core.CommandProvider.Dapper\Best.Practices.Core.CommandProvider.Dapper.csproj", "{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Best.Practices.Core.CommandProvider.Dapper.Tests", "Best.Practices.Core.CommandProvider.Dapper.Tests\Best.Practices.Core.CommandProvider.Dapper.Tests.csproj", "{D37B2030-0F41-47E6-8E12-561AF18D77FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{CB7DBFC8-E4EB-438F-B0CE-569A643226C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB7DBFC8-E4EB-438F-B0CE-569A643226C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB7DBFC8-E4EB-438F-B0CE-569A643226C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37B2030-0F41-47E6-8E12-561AF18D77FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37B2030-0F41-47E6-8E12-561AF18D77FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37B2030-0F41-47E6-8E12-561AF18D77FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37B2030-0F41-47E6-8E12-561AF18D77FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
