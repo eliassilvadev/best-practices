@@ -1,7 +1,9 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.CommandProviders;
+using Best.Practices.Core.CommandProvider.Dapper.Extensions;
 using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Cqrs;
 using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Extensions;
 using Dapper;
 using System.Data;
@@ -37,100 +39,14 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-
-                sucess = false;
+                throw new CommandExecutionException(CommonConstants.ErrorMessages.DefaultErrorMessage + CommonConstants.StringEnter + ex.Message);
             }
 
             return sucess;
         }
 
         public CommandDefinition InsertCommandFromParameters(
-            Dictionary<string, object> entityParameters, IList<DapperTableColumnDefinitions> tableColumnDefinitions, string tableName)
-        {
-            var insertScript = "Insert Into " + tableName + CommonConstants.StringEnter + "(" + tableName;
-
-            var fieldsToInsert = string.Empty;
-            var parameterNames = string.Empty;
-
-            var dapperParameters = new DynamicParameters();
-
-            foreach (var entityParameter in entityParameters)
-            {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == entityParameter.Key);
-
-                if (tableColumnDefinition is not null)
-                {
-                    if (!fieldsToInsert.IsEmpty())
-                    {
-                        fieldsToInsert += CommonConstants.StringComma;
-                        parameterNames += CommonConstants.StringComma + CommonConstants.StringEnter;
-                    }
-
-                    fieldsToInsert += entityParameter.Key + CommonConstants.StringEnter;
-                    parameterNames += DAPPER_PARAMETER_INDICATOR + entityParameter.Key + CommonConstants.StringEnter;
-
-                    if (entityParameter.Value is not null)
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, entityParameter.Value, size: tableColumnDefinition.Size);
-                    else
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, DBNull.Value);
-                }
-            }
-
-            insertScript += fieldsToInsert + " Values (" + CommonConstants.StringEnter;
-
-            insertScript += parameterNames + ");";
-
-            return new CommandDefinition(insertScript, dapperParameters);
-        }
-
-        public CommandDefinition UpdateCommandFromParameters(IList<string> fieldNamesToUpdate, IList<string> filterCriteria, string tableName)
-        {
-            var updateScript = "Update " + tableName + " Set " + CommonConstants.StringEnter;
-
-            var fieldsToUpdate = string.Empty;
-
-            foreach (var parameterName in fieldNamesToUpdate)
-            {
-                if (!fieldsToUpdate.IsEmpty())
-                    fieldsToUpdate += CommonConstants.StringEnter;
-
-                fieldsToUpdate += parameterName + " = " + DAPPER_PARAMETER_INDICATOR + parameterName;
-            }
-
-            updateScript += fieldsToUpdate + " Where " + CommonConstants.StringEnter;
-
-            var filterFieldNamesScript = string.Empty;
-
-            foreach (var filterFieldName in filterCriteria)
-            {
-                if (!filterFieldNamesScript.IsEmpty())
-                    filterFieldNamesScript += CommonConstants.StringEnter;
-
-                filterFieldNamesScript += filterFieldName + " = " + DAPPER_PARAMETER_INDICATOR + filterFieldName;
-            }
-
-            updateScript += filterFieldNamesScript + CommonConstants.StringEnter + ";";
-
-            return new CommandDefinition(updateScript);
-        }
-
-        public CommandDefinition UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
-           IBaseEntity baseEntity,
-           IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-           string tableName,
-           string idFieldName)
-        {
-            var filterCriteriaById = new Dictionary<string, object>()
-            {
-                { idFieldName, baseEntity.Id }
-            };
-
-            return UpdateCommandByEntityUpdatedPropertiesWithCriteria(baseEntity, filterCriteriaById, tableColumnDefinitions, tableName);
-        }
-
-        public CommandDefinition InsertCommandFromEntityProperties(
-            IBaseEntity baseEntity,
+            Dictionary<string, object> entityParameters,
             IList<DapperTableColumnDefinitions> tableColumnDefinitions,
             string tableName)
         {
@@ -141,11 +57,9 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             var dapperParameters = new DynamicParameters();
 
-            var insertableProperties = baseEntity.GetInsertableProperties();
-
-            foreach (var insertableProperty in insertableProperties)
+            foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(e => e.EntityFieldName == insertableProperty.Key);
+                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(e => e.EntityFieldName == entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -155,13 +69,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                         parameterNames += CommonConstants.StringComma + CommonConstants.StringEnter;
                     }
 
-                    fieldsToInsert += insertableProperty.Key;
-                    parameterNames += DAPPER_PARAMETER_INDICATOR + insertableProperty.Key;
+                    fieldsToInsert += entityParameter.Key;
+                    parameterNames += DAPPER_PARAMETER_INDICATOR + entityParameter.Key;
 
-                    if (insertableProperty.Value is not null)
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, insertableProperty.Value, size: tableColumnDefinition.Size);
-                    else
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, DBNull.Value);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, entityParameter.Value, size: tableColumnDefinition.Size);
                 }
             }
 
@@ -172,22 +83,20 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             return new CommandDefinition(insertScript, dapperParameters);
         }
 
-        public CommandDefinition UpdateCommandByEntityUpdatedPropertiesWithCriteria(
-            IBaseEntity baseEntity,
-            Dictionary<string, object> filterCriteria,
+        public CommandDefinition UpdateCommandFromParameters(
+            Dictionary<string, object> entityParameters,
             IList<DapperTableColumnDefinitions> tableColumnDefinitions,
+            Dictionary<string, object> filterCriteria,
             string tableName)
         {
-            var updatedProperties = baseEntity.GetUpdatedProperties();
-
             var updateScript = "Update " + tableName + " Set" + CommonConstants.StringEnter;
 
             var fieldsToUpdate = string.Empty;
             var dapperParameters = new DynamicParameters();
 
-            foreach (var updatedProperty in updatedProperties)
+            foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == updatedProperty.Key);
+                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -196,10 +105,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
                     fieldsToUpdate += tableColumnDefinition.DbFieldName + " = " + DAPPER_PARAMETER_INDICATOR + tableColumnDefinition.DbFieldName;
 
-                    if (updatedProperty.Value is not null)
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, updatedProperty.Value, size: tableColumnDefinition.Size);
-                    else
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, DBNull.Value);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, entityParameter.Value, size: tableColumnDefinition.Size);
                 }
             }
 
@@ -221,8 +127,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                     else
                         filterFieldNamesScript += tableColumnDefinition.DbFieldName + " is null";
 
-                    if (filterCriteriaPart.Value is not null)
-                        dapperParameters.Add(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
                 }
             }
 
@@ -231,12 +136,48 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             return new CommandDefinition(updateScript, dapperParameters);
         }
 
+        public CommandDefinition UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
+           IBaseEntity baseEntity,
+           IList<DapperTableColumnDefinitions> tableColumnDefinitions,
+           string tableName,
+           string idFieldName)
+        {
+            var filterCriteriaById = new Dictionary<string, object>()
+            {
+                { idFieldName, baseEntity.Id }
+            };
+
+            return UpdateCommandByEntityUpdatedPropertiesWithCriteria(baseEntity, filterCriteriaById, tableColumnDefinitions, tableName);
+        }
+
+        public CommandDefinition InsertCommandFromEntityProperties(
+            IBaseEntity baseEntity,
+            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
+            string tableName)
+        {
+            var insertableProperties = baseEntity.GetInsertableProperties();
+
+            return InsertCommandFromParameters(insertableProperties, tableColumnDefinitions, tableName);
+        }
+
+        public CommandDefinition UpdateCommandByEntityUpdatedPropertiesWithCriteria(
+            IBaseEntity baseEntity,
+            Dictionary<string, object> filterCriteria,
+            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
+            string tableName)
+        {
+            var updatedProperties = baseEntity.GetUpdatedProperties();
+
+            return UpdateCommandFromParameters(updatedProperties, tableColumnDefinitions, filterCriteria, tableName);
+        }
+
         public CommandDefinition DeleteCommandWithEntityAndIdCriteria(
           IBaseEntity baseEntity,
           IList<DapperTableColumnDefinitions> tableColumnDefinitions,
           string tableName)
         {
             var idFieldDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == nameof(baseEntity.Id));
+
             return DeleteCommandWithCriteria(
                 new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
                 [idFieldDefinition],
@@ -268,8 +209,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                     else
                         filterFieldNamesScript += tableColumnDefinition.DbFieldName + " is null";
 
-                    if (filterCriteriaPart.Value is not null)
-                        parameters.Add(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
+                    parameters.AddNullable(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
                 }
             }
 

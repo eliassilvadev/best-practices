@@ -1,14 +1,14 @@
 ﻿using Best.Practices.Core.UnitOfWork;
-using System.Data.Common;
+using System.Data;
 
 namespace Best.Practices.Core.CommandProvider.Dapper.UnitOfWork
 {
     public class DapperUnitOfWork : BaseUnitOfWork
     {
-        private readonly DbConnection _connection;
-        private DbTransaction _transaction;
+        private readonly IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public DapperUnitOfWork(DbConnection connection) : base()
+        public DapperUnitOfWork(IDbConnection connection) : base()
         {
             _connection = connection;
         }
