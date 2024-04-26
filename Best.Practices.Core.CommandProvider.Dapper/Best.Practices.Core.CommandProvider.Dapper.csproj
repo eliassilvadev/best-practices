@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PackageTags>DDD,CommandProvider,CommandStack</PackageTags>
+    <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
+    <Authors>Elias Silva</Authors>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
