@@ -18,7 +18,7 @@ namespace Best.Practices.Core.Common
 
         public static ErrorMessage ConvertMessageToErrorMessage(string message)
         {
-            var code = CommonConstants.ErrorCodes.DefaulErrorCode;
+            var code = CommonConstants.ErrorCodes.DefaultErrorCode;
             var errorMessage = message;
 
             if (message.Contains(CommonConstants.ErrorMessageSeparator))
@@ -44,7 +44,7 @@ namespace Best.Practices.Core.Common
 
         public override string ToString()
         {
-            return Code + CommonConstants.StringSpace + Message;
+            return Code + CommonConstants.ErrorMessageSeparator + Message;
         }
     }
 }

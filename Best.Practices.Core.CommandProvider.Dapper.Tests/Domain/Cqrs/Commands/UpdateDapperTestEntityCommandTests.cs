@@ -1,8 +1,12 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions;
+using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Enumerators;
+using Best.Practices.Core.Exceptions;
+using Dapper;
 using FluentAssertions;
 using Moq;
+using Moq.Dapper;
 using System.Data;
 using Xunit;
 
@@ -212,6 +216,44 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
                 "ChildEntityTestTable");
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
+        }
+
+        [Fact]
+        public void Execute_ExecuteWithSuccess_ReturnsTrue()
+        {
+            var entityUpdatedProperties = new Dictionary<string, object>()
+            {
+                { nameof(DapperTestEntity.Code),"000001" },
+                { nameof(DapperTestEntity.Name),"Name Test" },
+            };
+
+            _entity.Setup(x => x.State).Returns(EntityState.Updated);
+            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
+            _entity.Setup(x => x.Childs).Returns([]);
+
+            _connection.SetupDapper(c => c.Execute(It.IsAny<CommandDefinition>())).Returns(0);
+
+            var result = _command.Execute();
+
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Execute_ConnectionThrowsException_ReturnsFalse()
+        {
+            var entityUpdatedProperties = new Dictionary<string, object>()
+            {
+                { nameof(DapperTestEntity.Code),"000001" },
+                { nameof(DapperTestEntity.Name),"Name Test" },
+            };
+
+            _entity.Setup(x => x.State).Returns(EntityState.Updated);
+            _entity.Setup(x => x.GetUpdatedProperties()).Throws(new Exception("Error Test"));
+            _entity.Setup(x => x.Childs).Returns([]);
+
+            Action execute = () => _command.Execute();
+
+            execute.Should().Throw<CommandExecutionException>().WithMessage(CommonConstants.ErrorMessages.DefaultErrorMessage + CommonConstants.StringEnter + "Error Test");
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Best.Practices.Core.Tests.Common
             var exception = new ErrorMessage("Error message test");
 
             // Assert
-            exception.Code.Should().Be(CommonConstants.ErrorCodes.DefaulErrorCode);
+            exception.Code.Should().Be(CommonConstants.ErrorCodes.DefaultErrorCode);
             exception.Message.Should().Be("Error message test");
         }
 

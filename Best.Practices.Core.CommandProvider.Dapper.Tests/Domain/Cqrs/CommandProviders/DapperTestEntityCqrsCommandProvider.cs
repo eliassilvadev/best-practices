@@ -3,13 +3,15 @@ using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.CommandProvid
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
 using Best.Practices.Core.Domain.Cqrs;
-using System.Data.Common;
+using System.Data;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.CommandProviders
 {
+    [ExcludeFromCodeCoverage]
     public class DapperTestEntityCqrsCommandProvider : DapperCqrsCommandProvider<DapperTestEntity>, IDapperTestEntityCqrsCommandProvider
     {
-        public DapperTestEntityCqrsCommandProvider(DbConnection connection) : base(connection)
+        public DapperTestEntityCqrsCommandProvider(IDbConnection connection) : base(connection)
         {
         }
 
@@ -36,7 +38,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.CommandPr
         public override IEntityCommand GetUpdateCommand(DapperTestEntity entity)
         {
             return new UpdateDapperTestEntityCommand(
-                Connection,
+                _connection,
                 entity);
         }
     }
