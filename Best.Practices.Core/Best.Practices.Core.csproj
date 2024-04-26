@@ -5,7 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Authors>Elias Silva</Authors>
     <PackageProjectUrl>https://github.com/eliassilvadev/best-practices</PackageProjectUrl>
-    <PackageTags>Clean Architecture, DDD</PackageTags>
+    <PackageTags>Clean Architecture, DDD, Repository, UseCase</PackageTags>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 	
   <ItemGroup>
