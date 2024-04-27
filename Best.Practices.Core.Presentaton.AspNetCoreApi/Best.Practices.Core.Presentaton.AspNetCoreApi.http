@@ -1,0 +1,6 @@
+@Best.Practices.Core.Presentaton.AspNetCoreApi_HostAddress = http://localhost:5117
+
+GET {{Best.Practices.Core.Presentaton.AspNetCoreApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

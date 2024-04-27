@@ -1,4 +1,5 @@
 using Best.Practices.Core.Tests.Application.SampleUseCasesDtos;
+using System;
 
 namespace Best.Practices.Core.Tests.Application.Dtos.Builders
 {
