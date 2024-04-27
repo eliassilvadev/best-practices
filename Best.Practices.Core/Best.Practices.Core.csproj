@@ -5,9 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Authors>Elias Silva</Authors>
     <PackageProjectUrl>https://github.com/eliassilvadev/best-practices</PackageProjectUrl>
-    <PackageTags>Clean Architecture, DDD, Repository, UseCase</PackageTags>
-    <Version>0.0.1</Version>
+    <PackageTags>CleanArchitecture, DDD, Repository, UseCase, OOP</PackageTags>
+    <Version>0.0.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Best.Practices.Core</Title>
+    <Description>A package to complete development with DDD and Clean Arquitechure aproach</Description>
   </PropertyGroup>
 	
   <ItemGroup>

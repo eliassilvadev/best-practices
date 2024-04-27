@@ -3,12 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
 	<ImplicitUsings>enable</ImplicitUsings>
-    <PackageTags>Clean Architecture,Presentation,AspNet.Core</PackageTags>
+    <PackageTags>CleanArchitecture,Presentation,AspNet.Core</PackageTags>
     <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
     <Authors>Elias Silva</Authors>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<IsPackable>true</IsPackable>
+	<Title>Best.Practices.Core.Presentaton.AspNetCoreApi</Title>
+	<Description>A package to develop rest apis with AspNet.Core</Description>
   </PropertyGroup>
 
   <ItemGroup>

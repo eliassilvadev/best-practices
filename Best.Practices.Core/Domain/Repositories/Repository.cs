@@ -1,6 +1,7 @@
 ﻿using Best.Practices.Core.Domain.Cqrs;
 using Best.Practices.Core.Domain.Cqrs.CommandProviders;
 using Best.Practices.Core.Domain.Enumerators;
+using Best.Practices.Core.Domain.Interceptors;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Domain.Repositories.Interfaces;
 using Best.Practices.Core.UnitOfWork.Interfaces;
@@ -44,7 +45,9 @@ namespace Best.Practices.Core.Domain.Repositories
 
             entity.SetStateAsUnchanged();
 
-            return entity;
+            var interceptor = new EntityStateControlInterceptorLinfu(entity);
+
+            return interceptor.CreateEntityWihStateControl(entity);
         }
     }
 }

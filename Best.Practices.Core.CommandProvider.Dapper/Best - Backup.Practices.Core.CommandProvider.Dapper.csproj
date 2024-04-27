@@ -9,7 +9,6 @@
     <Version>0.0.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Best.Practices.Core.CommandProvider.Dapper</Title>
-    <Description>A package to develop command stack layer using Dapper</Description>
   </PropertyGroup>
 
   <ItemGroup>
