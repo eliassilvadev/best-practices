@@ -1,4 +1,5 @@
 using Best.Practices.Core.Application.Dtos.Input;
+using System.Collections.Generic;
 
 namespace Best.Practices.Core.Tests.Application.Dtos.Builders
 {

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <PackageTags>Clean Architecture,Presentation,AspNet.Core</PackageTags>
+    <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
+    <Authors>Elias Silva</Authors>
+    <Version>0.0.1</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Best.Practices.Core\Best.Practices.Core.csproj" />
+  </ItemGroup>
+
+</Project>
