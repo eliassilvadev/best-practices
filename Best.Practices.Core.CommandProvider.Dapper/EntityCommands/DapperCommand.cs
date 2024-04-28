@@ -2,6 +2,7 @@
 using Best.Practices.Core.CommandProvider.Dapper.Extensions;
 using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Cqrs;
+using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Extensions;
@@ -47,10 +48,9 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
         public CommandDefinition InsertCommandFromParameters(
             Dictionary<string, object> entityParameters,
-            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-            string tableName)
+            DapperTableDefinition tableDefinition)
         {
-            var insertScript = "Insert Into " + tableName + "(" + CommonConstants.StringEnter;
+            var insertScript = "Insert Into " + tableDefinition.TableName + "(" + CommonConstants.StringEnter;
 
             var fieldsToInsert = string.Empty;
             var parameterNames = string.Empty;
@@ -59,7 +59,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(e => e.EntityFieldName == entityParameter.Key);
+                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(e => e.EntityFieldName == entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -85,18 +85,17 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
         public CommandDefinition UpdateCommandFromParameters(
             Dictionary<string, object> entityParameters,
-            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-            Dictionary<string, object> filterCriteria,
-            string tableName)
+            DapperTableDefinition tableDefinition,
+            Dictionary<string, object> filterCriteria)
         {
-            var updateScript = "Update " + tableName + " Set" + CommonConstants.StringEnter;
+            var updateScript = "Update " + tableDefinition.TableName + " Set" + CommonConstants.StringEnter;
 
             var fieldsToUpdate = string.Empty;
             var dapperParameters = new DynamicParameters();
 
             foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == entityParameter.Key);
+                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -115,7 +114,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var filterCriteriaPart in filterCriteria)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
+                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -138,58 +137,48 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
         public CommandDefinition UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
            IBaseEntity baseEntity,
-           IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-           string tableName,
-           string idFieldName)
+           DapperTableDefinition tableDefinition)
         {
-            var filterCriteriaById = new Dictionary<string, object>()
-            {
-                { idFieldName, baseEntity.Id }
-            };
 
-            return UpdateCommandByEntityUpdatedPropertiesWithCriteria(baseEntity, filterCriteriaById, tableColumnDefinitions, tableName);
+            return UpdateCommandByEntityUpdatedPropertiesWithCriteria(
+                baseEntity,
+                new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
+                tableDefinition);
         }
 
         public CommandDefinition InsertCommandFromEntityProperties(
             IBaseEntity baseEntity,
-            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-            string tableName)
+            DapperTableDefinition tableDefinition)
         {
             var insertableProperties = baseEntity.GetInsertableProperties();
 
-            return InsertCommandFromParameters(insertableProperties, tableColumnDefinitions, tableName);
+            return InsertCommandFromParameters(insertableProperties, tableDefinition);
         }
 
         public CommandDefinition UpdateCommandByEntityUpdatedPropertiesWithCriteria(
             IBaseEntity baseEntity,
             Dictionary<string, object> filterCriteria,
-            IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-            string tableName)
+            DapperTableDefinition tableDefinitions)
         {
             var updatedProperties = baseEntity.GetUpdatedProperties();
 
-            return UpdateCommandFromParameters(updatedProperties, tableColumnDefinitions, filterCriteria, tableName);
+            return UpdateCommandFromParameters(updatedProperties, tableDefinitions, filterCriteria);
         }
 
         public CommandDefinition DeleteCommandWithEntityAndIdCriteria(
           IBaseEntity baseEntity,
-          IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-          string tableName)
+          DapperTableDefinition tableDefinition)
         {
-            var idFieldDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == nameof(baseEntity.Id));
-
             return DeleteCommandWithCriteria(
                 new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
-                [idFieldDefinition],
-                tableName);
+                tableDefinition);
         }
 
         public CommandDefinition DeleteCommandWithCriteria(
         Dictionary<string, object> filterCriteria,
-        IList<DapperTableColumnDefinitions> tableColumnDefinitions,
-        string tableName)
+        DapperTableDefinition tableDefinition)
         {
-            var deleteScript = "Delete From" + CommonConstants.StringEnter + tableName + CommonConstants.StringEnter + "Where" + CommonConstants.StringEnter;
+            var deleteScript = "Delete From" + CommonConstants.StringEnter + tableDefinition.TableName + CommonConstants.StringEnter + "Where" + CommonConstants.StringEnter;
 
             var filterFieldNamesScript = string.Empty;
 
@@ -197,7 +186,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var filterCriteriaPart in filterCriteria)
             {
-                var tableColumnDefinition = tableColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
+                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -216,6 +205,29 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             deleteScript += filterFieldNamesScript + ";";
 
             return new CommandDefinition(deleteScript, parameters);
+        }
+
+        public CommandDefinition? GetCommandDefinitionByState<TEntity>(TEntity entity, DapperTableDefinition tableDefinition)
+             where TEntity : IBaseEntity
+        {
+            CommandDefinition? commandDefinition = null;
+
+            switch (entity.State)
+            {
+                case EntityState.New:
+                    commandDefinition = InsertCommandFromEntityProperties(entity, tableDefinition);
+                    break;
+                case EntityState.Updated:
+                    commandDefinition = UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(entity, tableDefinition);
+                    break;
+                case EntityState.Deleted:
+                    commandDefinition = DeleteCommandWithEntityAndIdCriteria(entity, tableDefinition);
+                    break;
+                default:
+                    break;
+            }
+
+            return commandDefinition;
         }
 
         public virtual IList<CommandDefinition> GetCommandDefinitions(Entity entity)

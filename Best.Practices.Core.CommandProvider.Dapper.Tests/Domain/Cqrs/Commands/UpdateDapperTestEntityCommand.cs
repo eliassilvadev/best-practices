@@ -19,36 +19,17 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         {
             var commandDefinitions = base.GetCommandDefinitions(entity);
 
-            var updateCommandDefinition = UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
-                entity, DapperTestEntityTableDefinition.TableColumnDefinitions, "EntityTestTable", "Id");
+            var updateCommandDefinition = GetCommandDefinitionByState(entity, DapperTestEntityTableDefinition.TableDefinition);
 
-            commandDefinitions.Add(updateCommandDefinition);
+            if (updateCommandDefinition.HasValue)
+                commandDefinitions.Add(updateCommandDefinition.Value);
 
             foreach (var child in entity.Childs.AllItems)
             {
-                if (child.State == Core.Domain.Enumerators.EntityState.New)
-                {
-                    var updateChildCommandDefinition = InsertCommandFromEntityProperties(
-                        child, DapperChildEntityTestTableDefinition.TableColumnDefinitions, "ChildEntityTestTable");
+                var commandDefinition = GetCommandDefinitionByState(child, DapperChildEntityTestTableDefinition.TableDefinition);
 
-                    commandDefinitions.Add(updateChildCommandDefinition);
-                }
-
-                if (child.State == Core.Domain.Enumerators.EntityState.Updated)
-                {
-                    var updateChildCommandDefinition = UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
-                        child, DapperChildEntityTestTableDefinition.TableColumnDefinitions, "ChildEntityTestTable", "Id");
-
-                    commandDefinitions.Add(updateChildCommandDefinition);
-                }
-
-                if (child.State == Core.Domain.Enumerators.EntityState.Deleted)
-                {
-                    var updateChildCommandDefinition = DeleteCommandWithEntityAndIdCriteria(
-                        child, DapperChildEntityTestTableDefinition.TableColumnDefinitions, "ChildEntityTestTable");
-
-                    commandDefinitions.Add(updateChildCommandDefinition);
-                }
+                if (commandDefinition.HasValue)
+                    commandDefinitions.Add(commandDefinition.Value);
             }
 
             return commandDefinitions;
