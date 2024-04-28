@@ -121,6 +121,9 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _childEntity.Setup(x => x.GetInsertableProperties()).Returns(childEntityInsertableProperties);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
+            var d = DapperChildEntityTestTableDefinition.TableDefinition;
+            var d2 = DapperTestEntityTableDefinition.TableDefinition;
+
             var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(2);
@@ -151,8 +154,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             var commandDefinition = _command.UpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 _entity.Object,
                 updateCriteria,
-                DapperTestEntityTableDefinition.TableColumnDefinitions,
-                "EntityTestTable");
+                DapperTestEntityTableDefinition.TableDefinition);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedUpdateSql);
         }
@@ -191,8 +193,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             var commandDefinition = _command.DeleteCommandWithEntityAndIdCriteria(
                 _entity.Object,
-                DapperTestEntityTableDefinition.TableColumnDefinitions,
-                "ChildEntityTestTable");
+                DapperChildEntityTestTableDefinition.TableDefinition);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
         }
@@ -200,20 +201,19 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         [Fact]
         public void DeleteCommandWithCriteria_Always_ReturnsDeleteCommandDefinition()
         {
-            const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nName = @Name\nAnd Code is null;";
+            const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nNumber = @Number\nAnd Description is null;";
 
             var deleteCriteria = new Dictionary<string, object>()
             {
-                { nameof(DapperTestEntity.Name),"Name Test" },
-                { nameof(DapperTestEntity.Code), null }
+                { nameof(DapperChildEntityTest.Number),"Number 001" },
+                { nameof(DapperChildEntityTest.Description), null }
             };
 
             _childEntity.Setup(x => x.GetInsertableProperties()).Returns([]);
 
             var commandDefinition = _command.DeleteCommandWithCriteria(
                 deleteCriteria,
-                DapperTestEntityTableDefinition.TableColumnDefinitions,
-                "ChildEntityTestTable");
+                DapperChildEntityTestTableDefinition.TableDefinition);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
         }

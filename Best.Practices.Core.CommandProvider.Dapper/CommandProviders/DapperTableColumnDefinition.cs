@@ -2,7 +2,7 @@
 
 namespace Best.Practices.Core.CommandProvider.Dapper.CommandProviders
 {
-    public class DapperTableColumnDefinitions
+    public class DapperTableColumnDefinition
     {
         public string EntityFieldName { get; set; }
         public string DbFieldName { get; set; }

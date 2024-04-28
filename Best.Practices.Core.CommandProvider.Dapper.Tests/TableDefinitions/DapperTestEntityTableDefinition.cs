@@ -6,34 +6,32 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions
 {
     public static class DapperTestEntityTableDefinition
     {
-        public static List<DapperTableColumnDefinitions> TableColumnDefinitions
+        public static readonly DapperTableDefinition TableDefinition = new DapperTableDefinition
         {
-            get
+            TableName = "EntityTestTable",
+            ColumnDefinitions = new List<DapperTableColumnDefinition>()
             {
-                return new List<DapperTableColumnDefinitions>()
+                new DapperTableColumnDefinition
                 {
-                    new DapperTableColumnDefinitions()
-                    {
-                        DbFieldName = "Id",
-                        EntityFieldName = nameof(DapperTestEntity.Id),
-                        Type = DbType.Guid
-                    },
-                    new DapperTableColumnDefinitions()
-                    {
-                        DbFieldName = "Code",
-                        EntityFieldName = nameof(DapperTestEntity.Code),
-                        Type = DbType.AnsiString,
-                        Size = 5
-                    },
-                    new DapperTableColumnDefinitions()
-                    {
-                        DbFieldName = "Name",
-                        EntityFieldName = nameof(DapperTestEntity.Name),
-                        Type = DbType.AnsiString,
-                        Size = 100
-                    }
-                };
+                    DbFieldName = "Id",
+                    EntityFieldName = nameof(DapperTestEntity.Id),
+                    Type = DbType.Guid
+                },
+                new DapperTableColumnDefinition
+                {
+                    DbFieldName = "Code",
+                    EntityFieldName = nameof(DapperTestEntity.Code),
+                    Type = DbType.AnsiString,
+                    Size = 5
+                },
+                new DapperTableColumnDefinition
+                {
+                    DbFieldName = "Name",
+                    EntityFieldName = nameof(DapperTestEntity.Name),
+                    Type = DbType.AnsiString,
+                    Size = 100
+                }
             }
-        }
+        };
     }
 }
