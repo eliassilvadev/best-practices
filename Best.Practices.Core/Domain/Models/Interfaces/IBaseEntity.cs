@@ -20,8 +20,6 @@ namespace Best.Practices.Core.Domain.Models.Interfaces
 
         void SetStateAsUnchanged();
 
-        Dictionary<string, object> GetUpdatedProperties();
-
-        Dictionary<string, object> GetInsertableProperties();
+        Dictionary<string, object> GetPropertiesToPersist();
     }
 }

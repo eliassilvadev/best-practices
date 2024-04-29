@@ -447,5 +447,68 @@ namespace Best.Practices.Core.Tests.Domain.Models
             cloneEntity.State.Should().Be(EntityState.New);
             cloneEntity.SampleName.Should().Be(childClass.SampleName);
         }
+
+        [Fact]
+        public void GetPropertiesToPersist_StateIsUnchanged_ReturnsEmptyDictinary()
+        {
+            //Arrange
+            var childClass = new ChildClassTest()
+            {
+                SampleName = "Name Test"
+            };
+
+            childClass.SetStateAsUnchanged();
+
+            //Act
+            var propertiesToPersist = childClass.GetPropertiesToPersist();
+
+            //Assert           
+            propertiesToPersist.Should().HaveCount(0);
+        }
+
+        [Fact]
+        public void GetPropertiesToPersist_StateIsNew_ReturnsAlInsertableProperties()
+        {
+            //Arrange
+            var childClass = new ChildClassTest()
+            {
+                SampleName = "Name Test"
+            };
+
+            var dictionary = new Dictionary<string, object>()
+            {
+                {"SampleName", childClass.SampleName  },
+                {"Id", childClass.Id  },
+                {"CreationDate", childClass.CreationDate  }
+            };
+
+            //Act
+            var propertiesToPersist = childClass.GetPropertiesToPersist();
+
+            //Assert
+            propertiesToPersist.Should().BeEquivalentTo(dictionary);
+        }
+
+        [Fact]
+        public void GetPropertiesToPersist_StateIsUpdated_ReturnsUpdatedProperties()
+        {
+            //Arrange
+            var childClass = new ChildClassTest()
+            {
+                SampleName = "Name Test"
+            };
+
+            childClass.SetStateAsUnchanged();
+
+            childClass.SampleName = "Updated Name";
+
+            childClass.SetStateAsUpdated();
+
+            //Act
+            var propertiesToPersist = childClass.GetPropertiesToPersist();
+
+            //Assert           
+            propertiesToPersist.Should().ContainEquivalentOf(new KeyValuePair<string, object>("SampleName", "Updated Name"));
+        }
     }
 }

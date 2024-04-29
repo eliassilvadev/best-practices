@@ -88,13 +88,30 @@ namespace Best.Practices.Core.Domain.Models
 
         public bool PropertyIsUpdated(object propertyOldValue, object propertyNewValue)
         {
-            return ((((propertyOldValue == null) && (propertyNewValue != null)) ||
-                        ((propertyOldValue != null) && (propertyNewValue == null))) ||
-                        ((propertyOldValue != null) && (propertyNewValue != null) &&
-                        (!propertyOldValue.Equals(propertyNewValue))));
+            var entityProperty = propertyNewValue as IBaseEntity;
+
+            if (entityProperty is not null)
+                return entityProperty.State == EntityState.Updated;
+            else
+                return ((((propertyOldValue == null) && (propertyNewValue != null)) ||
+                            ((propertyOldValue != null) && (propertyNewValue == null))) ||
+                            ((propertyOldValue != null) && (propertyNewValue != null) &&
+                            (!propertyOldValue.Equals(propertyNewValue))));
         }
 
-        public virtual Dictionary<string, object> GetUpdatedProperties()
+        public virtual Dictionary<string, object> GetPropertiesToPersist()
+        {
+            var properties = new Dictionary<string, object>();
+
+            if (State == EntityState.New)
+                properties = GetInsertableProperties();
+            else if (State == EntityState.Updated)
+                properties = GetUpdatedProperties();
+
+            return properties;
+        }
+
+        protected virtual Dictionary<string, object> GetUpdatedProperties()
         {
             var objectType = GetType();
             var properties = objectType.GetProperties()
@@ -114,7 +131,7 @@ namespace Best.Practices.Core.Domain.Models
             return updatedProperties;
         }
 
-        public virtual Dictionary<string, object> GetInsertableProperties()
+        protected virtual Dictionary<string, object> GetInsertableProperties()
         {
             var objectType = GetType();
             var properties = objectType.GetProperties()
