@@ -14,7 +14,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.CommandProviders
             _connection = connection;
         }
 
-        public abstract Entity GetById(Guid id);
+        public abstract Task<Entity> GetById(Guid id);
 
         public abstract IEntityCommand GetAddCommand(Entity entity);
 

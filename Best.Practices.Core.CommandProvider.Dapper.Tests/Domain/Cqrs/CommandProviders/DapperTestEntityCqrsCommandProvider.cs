@@ -25,7 +25,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.CommandPr
             throw new NotImplementedException();
         }
 
-        public override DapperTestEntity GetById(Guid id)
+        public override Task<DapperTestEntity> GetById(Guid id)
         {
             throw new NotImplementedException();
         }

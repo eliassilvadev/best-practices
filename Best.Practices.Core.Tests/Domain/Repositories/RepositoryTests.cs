@@ -35,28 +35,28 @@ namespace Best.Practices.Core.Tests.Domain.Repositories
         }
 
         [Fact]
-        public void GetById_Always_StateSetAsUnChanged()
+        public async Task GetById_Always_StateSetAsUnChanged()
         {
             //Arrange
             _commandProvider.Setup(c => c.GetById(It.IsAny<Guid>()))
-                .Returns(_entity.Object);
+                .ReturnsAsync(_entity.Object);
 
             //Act
-            _repository.GetById(It.IsAny<Guid>());
+            await _repository.GetById(It.IsAny<Guid>());
 
             //Assert
             _entity.Verify(e => e.SetStateAsUnchanged(), Times.Once);
         }
 
         [Fact]
-        public void GetById_EntityDoesNotExists_ReturnsNull()
+        public async Task GetById_EntityDoesNotExists_ReturnsNull()
         {
             //Arrange
             _commandProvider.Setup(c => c.GetById(It.IsAny<Guid>()))
-                .Returns(null as IBaseEntity);
+                .ReturnsAsync(null as IBaseEntity);
 
             //Act
-            _repository.GetById(It.IsAny<Guid>());
+            await _repository.GetById(It.IsAny<Guid>());
 
             //Assert
             _entity.Verify(e => e.SetStateAsUnchanged(), Times.Never);

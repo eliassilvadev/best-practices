@@ -20,9 +20,9 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
             _sampleRepository = sampleRepository;
         }
 
-        public override UseCaseOutput<SampleChildUseCaseOutput> InternalExecute(SampleChildUseCaseInput input)
+        public override async Task<UseCaseOutput<SampleChildUseCaseOutput>> InternalExecute(SampleChildUseCaseInput input)
         {
-            ThrowsInvalidInputIfEntityExists(
+            await ThrowsInvalidInputIfEntityExistsAsync(
                 _sampleRepository.GetBySampleName,
                 input.SampleName, CommonTestContants.EntityWithNameAlreadyExists.Format(input.SampleName));
 

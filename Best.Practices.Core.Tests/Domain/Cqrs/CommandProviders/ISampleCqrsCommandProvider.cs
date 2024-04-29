@@ -5,6 +5,6 @@ namespace Best.Practices.Core.Tests.Domain.Cqrs.CommandProviders
 {
     public interface ISampleCqrsCommandProvider : ICqrsCommandProvider<SampleEntity>
     {
-        SampleEntity GetBySampleName(string sampleName);
+        Task<SampleEntity> GetBySampleName(string sampleName);
     }
 }

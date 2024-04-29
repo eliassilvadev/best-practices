@@ -19,14 +19,14 @@ namespace Best.Practices.Core.Application.UseCases
             return new UseCaseOutput<Output>(errors);
         }
 
-        public abstract UseCaseOutput<Output> InternalExecute(Input input);
+        public abstract Task<UseCaseOutput<Output>> InternalExecute(Input input);
 
-        public virtual UseCaseOutput<Output> Execute(Input input)
+        public virtual async Task<UseCaseOutput<Output>> Execute(Input input)
         {
             UseCaseOutput<Output> output;
             try
             {
-                output = InternalExecute(input);
+                output = await InternalExecute(input);
             }
             catch (ValidationException ex)
             {

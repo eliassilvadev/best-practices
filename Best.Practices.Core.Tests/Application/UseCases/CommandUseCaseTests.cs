@@ -27,7 +27,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_InputIsValid_ReturnsSuccess()
+        public async Task Execute_InputIsValid_ReturnsSuccess()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -37,16 +37,16 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var sampleEntity = new SampleEntityBuilder().Build();
 
             _sampleRepository.Setup(s => s.GetBySampleName(input.SampleName))
-                .Returns(null as SampleEntity);
+                .ReturnsAsync(null as SampleEntity);
 
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
-                .Returns(sampleEntity);
+                .ReturnsAsync(sampleEntity);
 
             _unitOfWork.Setup(s => s.SaveChanges())
                 .Returns(true);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -56,7 +56,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_SampleNameAlreadyExists_ReturnsError()
+        public async Task Execute_SampleNameAlreadyExists_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -66,9 +66,9 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var sampleEntity = new SampleEntityBuilder().Build();
 
             _sampleRepository.Setup(s => s.GetBySampleName(input.SampleName))
-                .Returns(sampleEntity);
+                .ReturnsAsync(sampleEntity);
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeTrue();
@@ -79,7 +79,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_SampleIdAreadyExists_ReturnsError()
+        public async Task Execute_SampleIdAreadyExists_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -87,16 +87,16 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .Build();
 
             _sampleRepository.Setup(s => s.GetBySampleName(input.SampleName))
-                .Returns(null as SampleEntity);
+                .ReturnsAsync(null as SampleEntity);
 
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
-                .Returns(null as SampleEntity);
+                .ReturnsAsync(null as SampleEntity);
 
             _unitOfWork.Setup(s => s.SaveChanges())
                 .Returns(true);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeTrue();
@@ -107,7 +107,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_SaveChangesReturnsFalse_ReturnsError()
+        public async Task Execute_SaveChangesReturnsFalse_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -117,16 +117,16 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var sampleEntity = new SampleEntityBuilder().Build();
 
             _sampleRepository.Setup(s => s.GetBySampleName(input.SampleName))
-                .Returns(null as SampleEntity);
+                .ReturnsAsync(null as SampleEntity);
 
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
-                .Returns(sampleEntity);
+                .ReturnsAsync(sampleEntity);
 
             _unitOfWork.Setup(s => s.SaveChanges())
                 .Returns(false);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeTrue();

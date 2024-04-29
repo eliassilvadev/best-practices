@@ -6,16 +6,16 @@ namespace Best.Practices.Core.Application.UseCases
 {
     public abstract class CommandUseCase<Input, Output>(IUnitOfWork unitOfWork) : BaseUseCase<Input, Output>
     {
-        public delegate Entity QueryMethod<InType, Entity>(InType inputValue);
+        public delegate Task<Entity> QueryMethod<InType, Entity>(InType inputValue);
         protected IUnitOfWork UnitOfWork { get; } = unitOfWork;
         protected abstract string SaveChangesErrorMessage { get; }
 
-        protected static void ThrowsIfEntityAlreadyExists<InType, Entity, ExistsExceptionType>(
+        protected static async Task ThrowsIfEntityAlreadyExistsAsync<InType, Entity, ExistsExceptionType>(
             QueryMethod<InType, Entity> queryMethod, InType inputValue, string errorMessage)
             where Entity : IBaseEntity
             where ExistsExceptionType : BaseException
         {
-            Entity entity = queryMethod.Invoke(inputValue);
+            Entity entity = await queryMethod.Invoke(inputValue);
 
             if (entity is not null)
                 throw (ExistsExceptionType)Activator.CreateInstance(typeof(ExistsExceptionType), [errorMessage]);
@@ -26,7 +26,7 @@ namespace Best.Practices.Core.Application.UseCases
             where Entity : IBaseEntity
             where ExistsExceptionType : BaseException
         {
-            entity = queryMethod.Invoke(inputValue);
+            entity = (queryMethod.Invoke(inputValue)).Result;
 
             if (entity is null)
                 throw (ExistsExceptionType)Activator.CreateInstance(typeof(ExistsExceptionType), [errorMessage]);
@@ -39,11 +39,11 @@ namespace Best.Practices.Core.Application.UseCases
             ThrowsIfEntityDoesNotExists<InType, Entity, ResourceNotFoundException>(queryMethod, inValue, errorMessage, out entity);
         }
 
-        protected static void ThrowsInvalidInputIfEntityExists<InType, Entity>(
+        protected static async Task ThrowsInvalidInputIfEntityExistsAsync<InType, Entity>(
             QueryMethod<InType, Entity> queryMethod, InType inputValue, string errorMessage)
             where Entity : IBaseEntity
         {
-            ThrowsIfEntityAlreadyExists<InType, Entity, InvalidInputException>(queryMethod, inputValue, errorMessage);
+            await ThrowsIfEntityAlreadyExistsAsync<InType, Entity, InvalidInputException>(queryMethod, inputValue, errorMessage);
         }
 
         protected virtual void SaveChanges()
