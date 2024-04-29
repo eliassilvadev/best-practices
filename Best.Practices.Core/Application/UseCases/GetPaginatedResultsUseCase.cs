@@ -22,13 +22,13 @@ namespace Best.Practices.Core.Application.UseCases
             _inputValidator = inputValidator;
         }
 
-        public override UseCaseOutput<PaginatedOutput<Output>> InternalExecute(GetPaginatedResultsInput input)
+        public override async Task<UseCaseOutput<PaginatedOutput<Output>>> InternalExecute(GetPaginatedResultsInput input)
         {
             _inputValidator.ValidateAndThrow(input);
 
-            var resultsInPage = _queryProvider.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage);
+            var resultsInPage = await _queryProvider.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage);
 
-            var resultsCount = _queryProvider.Count(input.Filters);
+            var resultsCount = await _queryProvider.Count(input.Filters);
 
             var maxPage = (int)(resultsCount / input.ItemsPerPage);
             var remainder = (resultsCount % input.ItemsPerPage);

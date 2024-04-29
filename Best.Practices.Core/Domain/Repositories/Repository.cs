@@ -33,9 +33,9 @@ namespace Best.Practices.Core.Domain.Repositories
                 unitOfWork.AddComand(persistenceMethod(entity));
         }
 
-        public virtual Entity GetById(Guid id)
+        public virtual async Task<Entity> GetById(Guid id)
         {
-            return HandleAfterGetFromCommandProvider(_commandProvider.GetById(id));
+            return HandleAfterGetFromCommandProvider(await _commandProvider.GetById(id));
         }
 
         protected virtual T HandleAfterGetFromCommandProvider<T>(T entity) where T : IBaseEntity

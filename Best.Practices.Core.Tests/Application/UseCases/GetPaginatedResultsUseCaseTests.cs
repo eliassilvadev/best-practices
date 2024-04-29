@@ -30,7 +30,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_InputIsValid_ReturnsResults()
+        public async Task Execute_InputIsValid_ReturnsResults()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -50,13 +50,13 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var results = new List<SampleChildUseCaseOutput>() { resultOutPut };
 
             _queryProvider.Setup(s => s.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage))
-                .Returns(results);
+                .ReturnsAsync(results);
 
             _queryProvider.Setup(x => x.Count(input.Filters))
-                .Returns(results.Count);
+                .ReturnsAsync(results.Count);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -69,7 +69,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_QueryProviderReturnsNoItems_ReturnsEmptyResults()
+        public async Task Execute_QueryProviderReturnsNoItems_ReturnsEmptyResults()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -85,13 +85,13 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .Build();
 
             _queryProvider.Setup(s => s.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage))
-                .Returns([]);
+                .ReturnsAsync([]);
 
             _queryProvider.Setup(x => x.Count(input.Filters))
-                .Returns(0);
+                .ReturnsAsync(0);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -103,7 +103,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_PagaNumberGreaterThanMaxPage_ReturnsError()
+        public async Task Execute_PagaNumberGreaterThanMaxPage_ReturnsError()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -123,13 +123,13 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var results = new List<SampleChildUseCaseOutput>() { resultOutPut };
 
             _queryProvider.Setup(s => s.GetPaginatedResults(input.Filters, input.PageNumber, input.ItemsPerPage))
-                .Returns(results);
+                .ReturnsAsync(results);
 
             _queryProvider.Setup(x => x.Count(input.Filters))
-                .Returns(results.Count);
+                .ReturnsAsync(results.Count);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeTrue();

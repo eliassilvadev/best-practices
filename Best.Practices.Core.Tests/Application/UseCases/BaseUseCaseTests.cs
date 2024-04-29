@@ -28,7 +28,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_Always_ReturnsSuccess()
+        public async Task Execute_Always_ReturnsSuccess()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -38,10 +38,10 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var sampleEntity = new SampleEntityBuilder().Build();
 
             _sampleRepository.Setup(s => s.GetById(It.IsAny<Guid>()))
-                .Returns(sampleEntity);
+                .ReturnsAsync(sampleEntity);
 
             // Act
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -49,22 +49,22 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public void Execute_SampleRepositoryThrowsException_ReturnError()
+        public async Task Execute_SampleRepositoryThrowsException_ReturnError()
         {
             var input = new SampleChildUseCaseInputBuilder()
                 .Build();
 
             _sampleRepository.Setup(s => s.GetById(It.IsAny<Guid>()))
-                .Throws(new Exception("Error test"));
+                .ThrowsAsync(new Exception("Error test"));
 
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;Error test"));
         }
 
         [Fact]
-        public void Execute_ValidatorThowsException_ReturnError()
+        public async Task Execute_ValidatorThowsException_ReturnError()
         {
             var input = new SampleChildUseCaseInputBuilder()
                 .Build();
@@ -72,14 +72,14 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _validator.Setup(x => x.Validate(It.IsAny<ValidationContext<SampleChildUseCaseInput>>()))
                 .Throws(new FluentValidation.ValidationException("000;Validation Error"));
 
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;Validation Error"));
         }
 
         [Fact]
-        public void Execute_ValidatorThowsExceptionAndHasErrors_ReturnError()
+        public async Task Execute_ValidatorThowsExceptionAndHasErrors_ReturnError()
         {
             var input = new SampleChildUseCaseInputBuilder()
                 .Build();
@@ -87,14 +87,14 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _validator.Setup(x => x.Validate(It.IsAny<ValidationContext<SampleChildUseCaseInput>>()))
                 .Throws(new FluentValidation.ValidationException([new ValidationFailure("SampleProperty", "SampleProperty is invalid.")]));
 
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;SampleProperty is invalid."));
         }
 
         [Fact]
-        public void Execute_EntityThowsException_ReturnError()
+        public async Task Execute_EntityThowsException_ReturnError()
         {
             var input = new SampleChildUseCaseInputBuilder()
                 .WithMonthlySalary(0)
@@ -103,9 +103,9 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             var sampleEntity = new SampleEntityBuilder().Build();
 
             _sampleRepository.Setup(s => s.GetById(It.IsAny<Guid>()))
-                .Returns(sampleEntity);
+                .ReturnsAsync(sampleEntity);
 
-            var output = _useCase.Execute(input);
+            var output = await _useCase.Execute(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage(CommonTestContants.EntitySalaryMustBeGreaterThanZero));

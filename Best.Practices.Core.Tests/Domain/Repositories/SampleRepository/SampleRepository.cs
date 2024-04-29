@@ -13,9 +13,9 @@ namespace Best.Practices.Core.Tests.Domain.Repositories.SampleRepository
             _commandProvider = commandProvider;
         }
 
-        public SampleEntity GetBySampleName(string sampleName)
+        public async Task<SampleEntity> GetBySampleName(string sampleName)
         {
-            return HandleAfterGetFromCommandProvider(_commandProvider.GetBySampleName(sampleName));
+            return HandleAfterGetFromCommandProvider(await _commandProvider.GetBySampleName(sampleName));
         }
     }
 }

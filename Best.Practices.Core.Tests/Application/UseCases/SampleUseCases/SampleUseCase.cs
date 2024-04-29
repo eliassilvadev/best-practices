@@ -18,11 +18,11 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
             _validator = validator;
         }
 
-        public override UseCaseOutput<bool> InternalExecute(SampleChildUseCaseInput input)
+        public override async Task<UseCaseOutput<bool>> InternalExecute(SampleChildUseCaseInput input)
         {
             _validator.ValidateAndThrow(input);
 
-            var entity = _sampleRepository.GetById(input.SampleId);
+            var entity = await _sampleRepository.GetById(input.SampleId);
 
             entity.SetMonthlySalary(input.MonthlySalary);
 

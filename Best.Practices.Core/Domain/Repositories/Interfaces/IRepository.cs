@@ -6,6 +6,6 @@ namespace Best.Practices.Core.Domain.Repositories.Interfaces
     public interface IRepository<Entity> where Entity : IBaseEntity
     {
         void Persist(Entity entity, IUnitOfWork unitOfWork);
-        Entity GetById(Guid id);
+        Task<Entity> GetById(Guid id);
     }
 }

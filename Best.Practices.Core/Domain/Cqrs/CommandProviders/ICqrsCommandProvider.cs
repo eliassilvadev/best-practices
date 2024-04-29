@@ -9,6 +9,6 @@ namespace Best.Practices.Core.Domain.Cqrs.CommandProviders
         IEntityCommand GetUpdateCommand(Entity entity);
 
         IEntityCommand GetDeleteCommand(Entity entity);
-        Entity GetById(Guid id);
+        Task<Entity> GetById(Guid id);
     }
 }
