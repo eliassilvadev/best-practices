@@ -9,6 +9,7 @@ using Moq;
 using Moq.Dapper;
 using System.Data;
 using Xunit;
+using static Dapper.SqlMapper;
 
 namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 {
@@ -17,12 +18,14 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         private readonly UpdateDapperTestEntityCommand _command;
         private readonly Mock<IDbConnection> _connection;
         private readonly Mock<DapperTestEntity> _entity;
+        private readonly Mock<DapperTestEntity2> _entity2;
         private readonly Mock<DapperChildEntityTest> _childEntity;
 
         public UpdateDapperTestEntityCommandTests()
         {
             _connection = new Mock<IDbConnection>();
             _entity = new Mock<DapperTestEntity>();
+            _entity2 = new Mock<DapperTestEntity2>();
             _childEntity = new Mock<DapperChildEntityTest>();
 
             _command = new UpdateDapperTestEntityCommand(_connection.Object, _entity.Object);
@@ -40,7 +43,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             };
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
             var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
@@ -60,7 +63,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             };
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
             var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
@@ -87,8 +90,8 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
             _childEntity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
-            _childEntity.Setup(x => x.GetUpdatedProperties()).Returns(childEntityUpdatedProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
+            _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns(childEntityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
             var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
@@ -117,8 +120,8 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
             _childEntity.Setup(x => x.State).Returns(EntityState.New);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
-            _childEntity.Setup(x => x.GetInsertableProperties()).Returns(childEntityInsertableProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
+            _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns(childEntityInsertableProperties);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
             var d = DapperChildEntityTestTableDefinition.TableDefinition;
@@ -149,7 +152,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             };
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
 
             var commandDefinition = _command.UpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 _entity.Object,
@@ -172,8 +175,8 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
             _childEntity.Setup(x => x.State).Returns(EntityState.Deleted);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
-            _childEntity.Setup(x => x.GetInsertableProperties()).Returns([]);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
+            _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns([]);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
             var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
@@ -209,11 +212,55 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
                 { nameof(DapperChildEntityTest.Description), null }
             };
 
-            _childEntity.Setup(x => x.GetInsertableProperties()).Returns([]);
+            _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns([]);
 
             var commandDefinition = _command.DeleteCommandWithCriteria(
                 deleteCriteria,
                 DapperChildEntityTestTableDefinition.TableDefinition);
+
+            commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
+        }
+
+        [Fact]
+        public void DeleteCommandWithCriteria_WhenHasAEntityInAProperty_ReturnsDeleteCommandDefinition()
+        {
+            var entityId = Guid.NewGuid();
+            const string expectedChildDeleteSql = "Delete From\nEntityTestTable2\nWhere\nChildEntity_Id = @ChildEntity_Id;";
+
+            _entity2.Setup(x => x.GetPropertiesToPersist()).Returns([]);
+
+            _entity2.Object.ChildEntity = new DapperTestEntity();
+
+            var deleteCriteria = new Dictionary<string, object>()
+            {
+                { nameof(DapperTestEntity2.ChildEntity), new DapperTestEntity() }
+            };
+
+            var commandDefinition = _command.DeleteCommandWithCriteria(
+                deleteCriteria,
+                DapperTestEntity2TableDefinition.TableDefinition);
+
+            commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
+        }
+
+        [Fact]
+        public void DeleteCommandWithCriteria_WhenHasAEntityInAPropertyAndColumnDefinitionHasSubProperty_ReturnsDeleteCommandDefinition()
+        {
+            var entityId = Guid.NewGuid();
+            const string expectedChildDeleteSql = "Delete From\nEntityTestTable2\nWhere\nChildEntity2_Id = @ChildEntity2_Id;";
+
+            _entity2.Setup(x => x.GetPropertiesToPersist()).Returns([]);
+
+            _entity2.Object.ChildEntity = new DapperTestEntity();
+
+            var deleteCriteria = new Dictionary<string, object>()
+            {
+                { "ChildEntity2.Id", new DapperTestEntity() }
+            };
+
+            var commandDefinition = _command.DeleteCommandWithCriteria(
+                deleteCriteria,
+                DapperTestEntity2TableDefinition.TableDefinition);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
         }
@@ -228,7 +275,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             };
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Returns(entityUpdatedProperties);
+            _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
             _connection.SetupDapper(c => c.Execute(It.IsAny<CommandDefinition>())).Returns(0);
@@ -248,7 +295,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             };
 
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
-            _entity.Setup(x => x.GetUpdatedProperties()).Throws(new Exception("Error Test"));
+            _entity.Setup(x => x.GetPropertiesToPersist()).Throws(new Exception("Error Test"));
             _entity.Setup(x => x.Childs).Returns([]);
 
             Action execute = () => _command.Execute();

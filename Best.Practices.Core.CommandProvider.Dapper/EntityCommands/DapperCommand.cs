@@ -59,7 +59,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(e => e.EntityFieldName == entityParameter.Key);
+                var tableColumnDefinition = GetTableColumnDefinition(tableDefinition.ColumnDefinitions, entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -72,7 +72,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                     fieldsToInsert += entityParameter.Key;
                     parameterNames += DAPPER_PARAMETER_INDICATOR + entityParameter.Key;
 
-                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, entityParameter.Value, size: tableColumnDefinition.Size);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, GetParameterValue(entityParameter.Key, entityParameter.Value), size: tableColumnDefinition.Size);
                 }
             }
 
@@ -81,6 +81,11 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             insertScript += parameterNames + ");";
 
             return new CommandDefinition(insertScript, dapperParameters);
+        }
+
+        private DapperTableColumnDefinition GetTableColumnDefinition(List<DapperTableColumnDefinition> columnDefinitions, string key)
+        {
+            return columnDefinitions.FirstOrDefault(c => c.EntityFieldName == key);
         }
 
         public CommandDefinition UpdateCommandFromParameters(
@@ -95,7 +100,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var entityParameter in entityParameters)
             {
-                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == entityParameter.Key);
+                var tableColumnDefinition = GetTableColumnDefinition(tableDefinition.ColumnDefinitions, entityParameter.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -104,7 +109,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
                     fieldsToUpdate += tableColumnDefinition.DbFieldName + " = " + DAPPER_PARAMETER_INDICATOR + tableColumnDefinition.DbFieldName;
 
-                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, entityParameter.Value, size: tableColumnDefinition.Size);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, GetParameterValue(entityParameter.Key, entityParameter.Value), size: tableColumnDefinition.Size);
                 }
             }
 
@@ -114,7 +119,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var filterCriteriaPart in filterCriteria)
             {
-                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
+                var tableColumnDefinition = GetTableColumnDefinition(tableDefinition.ColumnDefinitions, filterCriteriaPart.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -126,13 +131,43 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                     else
                         filterFieldNamesScript += tableColumnDefinition.DbFieldName + " is null";
 
-                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
+                    dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, GetParameterValue(filterCriteriaPart.Key, filterCriteriaPart.Value), size: tableColumnDefinition.Size);
                 }
             }
 
             updateScript += filterFieldNamesScript + ";";
 
             return new CommandDefinition(updateScript, dapperParameters);
+        }
+
+        private static object GetParameterValue(string key, object value)
+        {
+            var entity = (value as IBaseEntity);
+
+            if (entity is not null)
+            {
+                if (!key.Contains(CommonConstants.CharFullStop)) // by default gets Id field 
+                    return entity.Id;
+                else
+                {
+                    string[] subProperties = key.Split(CommonConstants.CharFullStop);
+
+                    var entityType = entity.GetType();
+
+                    var propertyName = subProperties[1];
+
+                    var property = entityType.GetProperties()
+                        .Where(p => p.Name == propertyName)
+                        .FirstOrDefault();
+
+                    if (property is not null)
+                        return property.GetValue(entity, null);
+                    else
+                        return null;
+                }
+            }
+
+            return value;
         }
 
         public CommandDefinition UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
@@ -150,7 +185,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             IBaseEntity baseEntity,
             DapperTableDefinition tableDefinition)
         {
-            var insertableProperties = baseEntity.GetInsertableProperties();
+            var insertableProperties = baseEntity.GetPropertiesToPersist();
 
             return InsertCommandFromParameters(insertableProperties, tableDefinition);
         }
@@ -160,7 +195,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             Dictionary<string, object> filterCriteria,
             DapperTableDefinition tableDefinitions)
         {
-            var updatedProperties = baseEntity.GetUpdatedProperties();
+            var updatedProperties = baseEntity.GetPropertiesToPersist();
 
             return UpdateCommandFromParameters(updatedProperties, tableDefinitions, filterCriteria);
         }
@@ -186,7 +221,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             foreach (var filterCriteriaPart in filterCriteria)
             {
-                var tableColumnDefinition = tableDefinition.ColumnDefinitions.FirstOrDefault(d => d.EntityFieldName == filterCriteriaPart.Key);
+                var tableColumnDefinition = GetTableColumnDefinition(tableDefinition.ColumnDefinitions, filterCriteriaPart.Key);
 
                 if (tableColumnDefinition is not null)
                 {
@@ -198,7 +233,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                     else
                         filterFieldNamesScript += tableColumnDefinition.DbFieldName + " is null";
 
-                    parameters.AddNullable(tableColumnDefinition.DbFieldName, filterCriteriaPart.Value, size: tableColumnDefinition.Size);
+                    parameters.AddNullable(tableColumnDefinition.DbFieldName, GetParameterValue(filterCriteriaPart.Key, filterCriteriaPart.Value), size: tableColumnDefinition.Size);
                 }
             }
 
