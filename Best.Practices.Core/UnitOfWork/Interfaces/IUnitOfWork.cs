@@ -6,9 +6,9 @@ namespace Best.Practices.Core.UnitOfWork.Interfaces
     {
         void AddComand(IEntityCommand command);
 
-        bool SaveChanges();
+        Task<bool> SaveChangesAsync();
 
-        void Rollback();
+        Task RollbackAsync();
 
         void SetEntitiesPersistedState();
     }

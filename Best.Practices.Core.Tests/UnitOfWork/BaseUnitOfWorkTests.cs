@@ -59,61 +59,61 @@ namespace Best.Practices.Core.Tests.UnitOfWork
         }
 
         [Fact]
-        public void SaveChanges_ComandsExecutedWithSucess_ReturnsTrue()
+        public async Task SaveChangesAsync_ComandsExecutedWithSucess_ReturnsTrue()
         {
             //Arrange
             var entity = new ChildClassTest();
 
             _entityComand.Setup(c => c.AffectedEntity).Returns(entity);
-            _entityComand.Setup(c => c.Execute()).Returns(true);
+            _entityComand.Setup(c => c.ExecuteAsync()).ReturnsAsync(true);
 
             //Act
             _unitOfWork.AddComand(_entityComand.Object);
             var commandsCount = _unitOfWork.Commands.Count();
 
-            var expectedReturn = _unitOfWork.SaveChanges();
+            var expectedReturn = await _unitOfWork.SaveChangesAsync();
 
             //Assert
             _unitOfWork.Commands.Should().HaveCount(0);
-            _entityComand.Verify(c => c.Execute(), Times.Exactly(commandsCount));
+            _entityComand.Verify(c => c.ExecuteAsync(), Times.Exactly(commandsCount));
             expectedReturn.Should().BeTrue();
         }
 
         [Fact]
-        public void SaveChanges_ComandsExecutedWithNoSucess_ReturnsFalse()
+        public async Task SaveChangesAsync_ComandsExecutedWithNoSucess_ReturnsFalse()
         {
             //Arrange
             var entity = new ChildClassTest();
 
             _entityComand.Setup(c => c.AffectedEntity).Returns(entity);
-            _entityComand.Setup(c => c.Execute()).Returns(false);
+            _entityComand.Setup(c => c.ExecuteAsync()).ReturnsAsync(false);
 
             //Act
             _unitOfWork.AddComand(_entityComand.Object);
             var commandsCount = _unitOfWork.Commands.Count();
 
-            var expectedReturn = _unitOfWork.SaveChanges();
+            var expectedReturn = await _unitOfWork.SaveChangesAsync();
 
             //Assert
             _unitOfWork.Commands.Should().HaveCount(0);
-            _entityComand.Verify(c => c.Execute(), Times.Exactly(commandsCount));
+            _entityComand.Verify(c => c.ExecuteAsync(), Times.Exactly(commandsCount));
             expectedReturn.Should().BeFalse();
         }
 
         [Fact]
-        public void SaveChanges_CommandThrowsException_ReturnsFalse()
+        public async Task SaveChangesAsync_CommandThrowsException_ReturnsFalse()
         {
             //Arrange
-            _entityComand.Setup(c => c.Execute()).Throws(new CommandExecutionException("Error Tesst"));
+            _entityComand.Setup(c => c.ExecuteAsync()).Throws(new CommandExecutionException("Error Tesst"));
             _unitOfWork.AddComand(_entityComand.Object);
             var commandsCount = _unitOfWork.Commands.Count();
 
             //Act
-            var expectedReturn = _unitOfWork.SaveChanges();
+            var expectedReturn = await _unitOfWork.SaveChangesAsync();
 
             //Assert
             _unitOfWork.Commands.Should().HaveCount(0);
-            _entityComand.Verify(c => c.Execute(), Times.Exactly(commandsCount));
+            _entityComand.Verify(c => c.ExecuteAsync(), Times.Exactly(commandsCount));
             expectedReturn.Should().BeFalse();
         }
 
@@ -135,7 +135,7 @@ namespace Best.Practices.Core.Tests.UnitOfWork
         }
 
         [Fact]
-        public void Rollback_Always_ClearCommandList()
+        public async Task RollbackAsync_Always_ClearCommandList()
         {
             // Arrange
             var entity = new ChildClassTest();
@@ -144,7 +144,7 @@ namespace Best.Practices.Core.Tests.UnitOfWork
             //Act
             _unitOfWork.AddComand(_entityComand.Object);
 
-            _unitOfWork.Rollback();
+            await _unitOfWork.RollbackAsync();
 
             //Assert
             _unitOfWork.Commands.Should().HaveCount(0);

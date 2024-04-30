@@ -25,23 +25,24 @@ namespace Best.Practices.Core.UnitOfWork
             }
         }
 
-        public virtual bool BeforeSave()
+        public virtual async Task<bool> BeforeSaveAsync()
         {
-            return true;
+            return await Task.FromResult(true);
         }
 
-        public virtual bool AfterSave(bool sucess)
+        public virtual async Task<bool> AfterSave(bool sucess)
         {
-            return sucess;
+            return await Task.FromResult(sucess);
         }
 
-        public virtual void AfterRollBack()
+        public virtual async Task AfterRollBackAsync()
         {
+            await Task.FromResult(() => { });
         }
 
-        public virtual bool SaveChanges()
+        public virtual async Task<bool> SaveChangesAsync()
         {
-            bool sucess = BeforeSave();
+            bool sucess = await BeforeSaveAsync();
 
             if (!sucess)
                 return false;
@@ -50,7 +51,7 @@ namespace Best.Practices.Core.UnitOfWork
             {
                 foreach (var command in Commands)
                 {
-                    sucess = command.Execute();
+                    sucess = await command.ExecuteAsync();
 
                     if (!sucess)
                         break;
@@ -62,7 +63,7 @@ namespace Best.Practices.Core.UnitOfWork
             }
             finally
             {
-                sucess = sucess && AfterSave(sucess);
+                sucess = sucess && await AfterSave(sucess);
 
                 if (sucess)
                     SetEntitiesPersistedState();
@@ -74,8 +75,10 @@ namespace Best.Practices.Core.UnitOfWork
         }
         public abstract void Dispose();
 
-        public void Rollback()
+        public async Task RollbackAsync()
         {
+            await Task.FromResult(() => { });
+
             Commands.Clear();
         }
     }

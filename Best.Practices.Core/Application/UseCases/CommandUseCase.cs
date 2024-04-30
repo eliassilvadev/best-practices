@@ -46,11 +46,11 @@ namespace Best.Practices.Core.Application.UseCases
             await ThrowsIfEntityAlreadyExistsAsync<InType, Entity, InvalidInputException>(queryMethod, inputValue, errorMessage);
         }
 
-        protected virtual void SaveChanges()
+        protected virtual async Task SaveChangesAsync()
         {
-            if (!UnitOfWork.SaveChanges())
+            if (!await UnitOfWork.SaveChangesAsync())
             {
-                UnitOfWork.Rollback();
+                await UnitOfWork.RollbackAsync();
 
                 throw new ExecutionErrorException(SaveChangesErrorMessage);
             }

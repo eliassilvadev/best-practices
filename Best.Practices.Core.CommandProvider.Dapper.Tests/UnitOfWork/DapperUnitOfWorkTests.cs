@@ -25,9 +25,9 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.UnitOfWork
         }
 
         [Fact]
-        public void BeforeSave_ConnectionIsClosed_CallOpenMethod()
+        public async Task BeforeSave_ConnectionIsClosed_CallOpenMethod()
         {
-            _unitOfWork.BeforeSave();
+            await _unitOfWork.BeforeSaveAsync();
 
             _connection.Setup(x => x.State).Returns(ConnectionState.Closed);
 
@@ -35,16 +35,16 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.UnitOfWork
         }
 
         [Fact]
-        public void AfterSave_WhenParameterSuccessIsTrue_CallTransactionCommit()
+        public async Task AfterSave_WhenParameterSuccessIsTrue_CallTransactionCommit()
         {
             //Arrange
             _connection.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _connection.Setup(x => x.State).Returns(ConnectionState.Closed);
 
-            _unitOfWork.BeforeSave();
+            await _unitOfWork.BeforeSaveAsync();
 
             //Act
-            _unitOfWork.AfterSave(true);
+            await _unitOfWork.AfterSave(true);
 
             //Assert
             _connection.Verify(x => x.Open(), Times.Once);
@@ -52,16 +52,16 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.UnitOfWork
         }
 
         [Fact]
-        public void AfterSave_WhenParameterSuccessIsFalse_ShouldNotCallTransactionCommit()
+        public async Task AfterSave_WhenParameterSuccessIsFalse_ShouldNotCallTransactionCommit()
         {
             //Arrange
             _connection.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _connection.Setup(x => x.State).Returns(ConnectionState.Closed);
 
-            _unitOfWork.BeforeSave();
+            await _unitOfWork.BeforeSaveAsync();
 
             //Act
-            _unitOfWork.AfterSave(false);
+            await _unitOfWork.AfterSave(false);
 
             //Assert
             _connection.Verify(x => x.Open(), Times.Once);
@@ -69,16 +69,16 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.UnitOfWork
         }
 
         [Fact]
-        public void AfterRollBack_Always_ShouldCallTransactionRollback()
+        public async Task AfterRollBack_Always_ShouldCallTransactionRollback()
         {
             //Arrange
             _connection.Setup(x => x.BeginTransaction()).Returns(_transaction.Object);
             _connection.Setup(x => x.State).Returns(ConnectionState.Closed);
 
-            _unitOfWork.BeforeSave();
+            await _unitOfWork.BeforeSaveAsync();
 
             //Act
-            _unitOfWork.AfterRollBack();
+            await _unitOfWork.AfterRollBackAsync();
 
             //Assert
             _transaction.Verify(x => x.Rollback(), Times.Once);

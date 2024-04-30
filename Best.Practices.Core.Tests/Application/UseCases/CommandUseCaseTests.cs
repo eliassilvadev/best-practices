@@ -27,7 +27,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public async Task Execute_InputIsValid_ReturnsSuccess()
+        public async Task ExecuteAsync_InputIsValid_ReturnsSuccess()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -42,21 +42,21 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
                 .ReturnsAsync(sampleEntity);
 
-            _unitOfWork.Setup(s => s.SaveChanges())
-                .Returns(true);
+            _unitOfWork.Setup(s => s.SaveChangesAsync())
+                .ReturnsAsync(true);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
             _sampleRepository.Verify(x => x.GetById(input.SampleLookUpId), Times.Once);
             _sampleRepository.Verify(x => x.GetBySampleName(input.SampleName), Times.Once);
-            _unitOfWork.Verify(x => x.SaveChanges(), Times.Once);
+            _unitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
-        public async Task Execute_SampleNameAlreadyExists_ReturnsError()
+        public async Task ExecuteAsync_SampleNameAlreadyExists_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -68,18 +68,18 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetBySampleName(input.SampleName))
                 .ReturnsAsync(sampleEntity);
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage(CommonTestContants.EntityWithNameAlreadyExists.Format(input.SampleName)));
             _sampleRepository.Verify(x => x.GetById(input.SampleLookUpId), Times.Never);
             _sampleRepository.Verify(x => x.GetBySampleName(input.SampleName), Times.Once);
-            _unitOfWork.Verify(x => x.SaveChanges(), Times.Never);
+            _unitOfWork.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Execute_SampleIdAreadyExists_ReturnsError()
+        public async Task ExecuteAsync_SampleIdAreadyExists_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -92,22 +92,22 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
                 .ReturnsAsync(null as SampleEntity);
 
-            _unitOfWork.Setup(s => s.SaveChanges())
-                .Returns(true);
+            _unitOfWork.Setup(s => s.SaveChangesAsync())
+                .ReturnsAsync(true);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage(CommonTestContants.EntityWithIdDoesNotExists.Format(input.SampleLookUpId)));
             _sampleRepository.Verify(x => x.GetById(input.SampleLookUpId), Times.Once);
             _sampleRepository.Verify(x => x.GetBySampleName(input.SampleName), Times.Once);
-            _unitOfWork.Verify(x => x.SaveChanges(), Times.Never);
+            _unitOfWork.Verify(x => x.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Execute_SaveChangesReturnsFalse_ReturnsError()
+        public async Task ExecuteAsync_SaveChangesReturnsFalse_ReturnsError()
         {
             // Arrange
             var input = new SampleChildUseCaseInputBuilder()
@@ -122,17 +122,17 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetById(input.SampleLookUpId))
                 .ReturnsAsync(sampleEntity);
 
-            _unitOfWork.Setup(s => s.SaveChanges())
-                .Returns(false);
+            _unitOfWork.Setup(s => s.SaveChangesAsync())
+                .ReturnsAsync(false);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeTrue();
             _sampleRepository.Verify(x => x.GetById(input.SampleLookUpId), Times.Once);
             _sampleRepository.Verify(x => x.GetBySampleName(input.SampleName), Times.Once);
-            _unitOfWork.Verify(x => x.SaveChanges(), Times.Once);
+            _unitOfWork.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
     }
 }
