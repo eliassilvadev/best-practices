@@ -266,7 +266,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void Execute_ExecuteWithSuccess_ReturnsTrue()
+        public async Task ExecuteAsync_ExecuteWithSuccess_ReturnsTrue()
         {
             var entityUpdatedProperties = new Dictionary<string, object>()
             {
@@ -278,15 +278,15 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
-            _connection.SetupDapper(c => c.Execute(It.IsAny<CommandDefinition>())).Returns(0);
+            _connection.SetupDapperAsync(c => c.ExecuteAsync(It.IsAny<CommandDefinition>())).ReturnsAsync(0);
 
-            var result = _command.Execute();
+            var result = await _command.ExecuteAsync();
 
             result.Should().BeTrue();
         }
 
         [Fact]
-        public void Execute_ConnectionThrowsException_ReturnsFalse()
+        public async Task ExecuteAsync_ConnectionThrowsException_ReturnsFalse()
         {
             var entityUpdatedProperties = new Dictionary<string, object>()
             {
@@ -298,9 +298,9 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _entity.Setup(x => x.GetPropertiesToPersist()).Throws(new Exception("Error Test"));
             _entity.Setup(x => x.Childs).Returns([]);
 
-            Action execute = () => _command.Execute();
+            Func<Task> execute = async () => await _command.ExecuteAsync();
 
-            execute.Should().Throw<CommandExecutionException>().WithMessage(CommonConstants.ErrorMessages.DefaultErrorMessage + CommonConstants.StringEnter + "Error Test");
+            await execute.Should().ThrowAsync<CommandExecutionException>().WithMessage(CommonConstants.ErrorMessages.DefaultErrorMessage + CommonConstants.StringEnter + "Error Test");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
             _validator = validator;
         }
 
-        public override async Task<UseCaseOutput<bool>> InternalExecute(SampleChildUseCaseInput input)
+        public override async Task<UseCaseOutput<bool>> InternalExecuteAsync(SampleChildUseCaseInput input)
         {
             _validator.ValidateAndThrow(input);
 

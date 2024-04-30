@@ -5,6 +5,6 @@ namespace Best.Practices.Core.Domain.Cqrs
     public interface IEntityCommand
     {
         IBaseEntity AffectedEntity { get; }
-        bool Execute();
+        Task<bool> ExecuteAsync();
     }
 }

@@ -24,7 +24,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             AffectedEntity = affectedEntity;
         }
 
-        public virtual bool Execute()
+        public virtual async Task<bool> ExecuteAsync()
         {
             bool sucess;
             try
@@ -33,7 +33,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
                 foreach (var commandDefinition in commandDefinitions)
                 {
-                    _connection.Execute(commandDefinition);
+                    await _connection.ExecuteAsync(commandDefinition);
                 }
 
                 sucess = true;

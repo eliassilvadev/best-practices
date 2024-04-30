@@ -20,7 +20,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
             _sampleRepository = sampleRepository;
         }
 
-        public override async Task<UseCaseOutput<SampleChildUseCaseOutput>> InternalExecute(SampleChildUseCaseInput input)
+        public override async Task<UseCaseOutput<SampleChildUseCaseOutput>> InternalExecuteAsync(SampleChildUseCaseInput input)
         {
             await ThrowsInvalidInputIfEntityExistsAsync(
                 _sampleRepository.GetBySampleName,
@@ -37,7 +37,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases.SampleUseCases
 
             _sampleRepository.Persist(entity, UnitOfWork);
 
-            SaveChanges();
+            await SaveChangesAsync();
 
             return CreateSuccessOutput(new SampleChildUseCaseOutput()
             {

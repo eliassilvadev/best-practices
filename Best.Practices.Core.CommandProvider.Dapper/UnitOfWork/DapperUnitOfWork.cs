@@ -17,19 +17,19 @@ namespace Best.Practices.Core.CommandProvider.Dapper.UnitOfWork
         {
             GC.SuppressFinalize(this);
         }
-        public override bool BeforeSave()
+        public override async Task<bool> BeforeSaveAsync()
         {
             if (_connection.State != System.Data.ConnectionState.Open)
                 _connection.Open();
 
             _transaction = _connection.BeginTransaction();
 
-            return base.BeforeSave();
+            return await base.BeforeSaveAsync();
         }
 
-        public override bool AfterSave(bool sucess)
+        public override async Task<bool> AfterSave(bool sucess)
         {
-            base.AfterSave(sucess);
+            await base.AfterSave(sucess);
 
             if (sucess)
                 _transaction.Commit();
@@ -37,11 +37,11 @@ namespace Best.Practices.Core.CommandProvider.Dapper.UnitOfWork
             return sucess;
         }
 
-        public override void AfterRollBack()
+        public override async Task AfterRollBackAsync()
         {
             _transaction.Rollback();
 
-            base.AfterRollBack();
+            await base.AfterRollBackAsync();
         }
     }
 }

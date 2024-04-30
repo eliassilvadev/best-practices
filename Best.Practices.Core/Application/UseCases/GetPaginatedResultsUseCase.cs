@@ -22,7 +22,7 @@ namespace Best.Practices.Core.Application.UseCases
             _inputValidator = inputValidator;
         }
 
-        public override async Task<UseCaseOutput<PaginatedOutput<Output>>> InternalExecute(GetPaginatedResultsInput input)
+        public override async Task<UseCaseOutput<PaginatedOutput<Output>>> InternalExecuteAsync(GetPaginatedResultsInput input)
         {
             _inputValidator.ValidateAndThrow(input);
 

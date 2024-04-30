@@ -30,7 +30,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public async Task Execute_InputIsValid_ReturnsResults()
+        public async Task ExecuteAsync_InputIsValid_ReturnsResults()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -56,7 +56,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .ReturnsAsync(results.Count);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -69,7 +69,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public async Task Execute_QueryProviderReturnsNoItems_ReturnsEmptyResults()
+        public async Task ExecuteAsync_QueryProviderReturnsNoItems_ReturnsEmptyResults()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -91,7 +91,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .ReturnsAsync(0);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -103,7 +103,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
         }
 
         [Fact]
-        public async Task Execute_PagaNumberGreaterThanMaxPage_ReturnsError()
+        public async Task ExecuteAsync_PagaNumberGreaterThanMaxPage_ReturnsError()
         {
             // Arrange
             var filter = new SearchFilterInputBuilder()
@@ -129,7 +129,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .ReturnsAsync(results.Count);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeTrue();

@@ -41,7 +41,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .ReturnsAsync(sampleEntity);
 
             // Act
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             // Assert
             output.HasErros.Should().BeFalse();
@@ -57,7 +57,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetById(It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Error test"));
 
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;Error test"));
@@ -72,7 +72,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _validator.Setup(x => x.Validate(It.IsAny<ValidationContext<SampleChildUseCaseInput>>()))
                 .Throws(new FluentValidation.ValidationException("000;Validation Error"));
 
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;Validation Error"));
@@ -87,7 +87,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _validator.Setup(x => x.Validate(It.IsAny<ValidationContext<SampleChildUseCaseInput>>()))
                 .Throws(new FluentValidation.ValidationException([new ValidationFailure("SampleProperty", "SampleProperty is invalid.")]));
 
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage("000;SampleProperty is invalid."));
@@ -105,7 +105,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
             _sampleRepository.Setup(s => s.GetById(It.IsAny<Guid>()))
                 .ReturnsAsync(sampleEntity);
 
-            var output = await _useCase.Execute(input);
+            var output = await _useCase.ExecuteAsync(input);
 
             output.HasErros.Should().BeTrue();
             output.Errors.Should().ContainEquivalentOf(new ErrorMessage(CommonTestContants.EntitySalaryMustBeGreaterThanZero));
