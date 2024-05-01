@@ -156,8 +156,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             var commandDefinition = _command.CreateAnUpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 _entity.Object,
-                updateCriteria,
-                DapperTestEntityTableDefinition.TableDefinition);
+                updateCriteria);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedUpdateSql);
         }
@@ -189,14 +188,12 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         [Fact]
         public void CreateADeleteCommandWithEntityAndIdCriteria_Always_ReturnsDeleteCommandDefinition()
         {
-            const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nId = @Id;";
+            const string expectedChildDeleteSql = "Delete From\nEntityTestTable\nWhere\nId = @Id;";
 
             _entity.Setup(x => x.State).Returns(EntityState.Deleted);
             _entity.Setup(x => x.Childs).Returns([]);
 
-            var commandDefinition = _command.CreateADeleteCommandWithEntityAndIdCriteria(
-                _entity.Object,
-                DapperChildEntityTestTableDefinition.TableDefinition);
+            var commandDefinition = _command.CreateADeleteCommandWithEntityAndIdCriteria(_entity.Object);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
         }

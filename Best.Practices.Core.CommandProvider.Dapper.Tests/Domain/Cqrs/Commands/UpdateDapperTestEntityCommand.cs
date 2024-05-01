@@ -11,22 +11,24 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
     {
         public UpdateDapperTestEntityCommand(
             IDbConnection connection,
-            DapperTestEntity affectedEntity
-            ) : base(connection, affectedEntity)
+            DapperTestEntity affectedEntity)
+            : base(connection, affectedEntity)
         {
+
+            _entityTableTypeMappings.Add(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
+            _entityTableTypeMappings.Add(nameof(DapperChildEntityTest), DapperChildEntityTestTableDefinition.TableDefinition);
         }
 
         public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
         {
             base.CreateCommandDefinitions(entity);
 
-            CreateCommandDefinitionByState(entity, DapperTestEntityTableDefinition.TableDefinition);
+            CreateCommandDefinitionByState(entity);
 
             foreach (var child in entity.Childs.AllItems)
             {
                 CreateCommandDefinitionByState(
                     child,
-                    DapperChildEntityTestTableDefinition.TableDefinition,
                     new Dictionary<string, IBaseEntity>() { { "ParentEntity", entity } });
             }
 
