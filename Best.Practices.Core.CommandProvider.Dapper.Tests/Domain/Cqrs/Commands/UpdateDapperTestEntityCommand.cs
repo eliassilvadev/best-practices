@@ -16,27 +16,21 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         {
         }
 
-        public override IList<CommandDefinition> GetCommandDefinitions(DapperTestEntity entity)
+        public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
         {
-            var commandDefinitions = base.GetCommandDefinitions(entity);
+            base.CreateCommandDefinitions(entity);
 
-            var updateCommandDefinition = GetCommandDefinitionByState(entity, DapperTestEntityTableDefinition.TableDefinition);
-
-            if (updateCommandDefinition.HasValue)
-                commandDefinitions.Add(updateCommandDefinition.Value);
+            CreateCommandDefinitionByState(entity, DapperTestEntityTableDefinition.TableDefinition);
 
             foreach (var child in entity.Childs.AllItems)
             {
-                var commandDefinition = GetCommandDefinitionByState(
+                CreateCommandDefinitionByState(
                     child,
                     DapperChildEntityTestTableDefinition.TableDefinition,
                     new Dictionary<string, IBaseEntity>() { { "ParentEntity", entity } });
-
-                if (commandDefinition.HasValue)
-                    commandDefinitions.Add(commandDefinition.Value);
             }
 
-            return commandDefinitions;
+            return CommandDefinitions;
         }
     }
 }

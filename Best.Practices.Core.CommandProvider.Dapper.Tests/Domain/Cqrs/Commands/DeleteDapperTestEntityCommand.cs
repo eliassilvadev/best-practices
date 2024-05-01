@@ -15,7 +15,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         {
         }
 
-        public override IList<CommandDefinition> GetCommandDefinitions(DapperTestEntity entity)
+        public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
         {
             var commandDefinitions = new List<CommandDefinition>();
 
