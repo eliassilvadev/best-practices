@@ -76,7 +76,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         public void GetCommandDefinitions_EntityHasAUpdatedChild_ReturnCommandsForAgregatedRootAndChild()
         {
             const string expectedAgregatedRootUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
-            const string expectedChildUpdateSql = "Update ChildEntityTestTable Set\nNumber = @Number\nWhere\nId = @Id;";
+            const string expectedChildUpdateSql = "Update ChildEntityTestTable Set\nNumber = @Number,\nParentEntityId = @ParentEntityId\nWhere\nId = @Id;";
 
             var entityUpdatedProperties = new Dictionary<string, object>()
             {
@@ -105,7 +105,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         public void GetCommandDefinitions_EntityHasAnNewChild_ReturnCommandsForAgregatedRootAndChild()
         {
             const string expectedAgregatedRootUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
-            const string expectedChildInsertSql = "Insert Into ChildEntityTestTable(\nNumber,\nDescription)\nValues(\n@Number,\n@Description);";
+            const string expectedChildInsertSql = "Insert Into ChildEntityTestTable(\nNumber,\nDescription,\nParentEntityId)\nValues(\n@Number,\n@Description,\n@ParentEntityId);";
 
             var entityUpdatedProperties = new Dictionary<string, object>()
             {

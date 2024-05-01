@@ -6,7 +6,7 @@
     <Authors>Elias Silva</Authors>
     <PackageProjectUrl>https://github.com/eliassilvadev/best-practices</PackageProjectUrl>
     <PackageTags>CleanArchitecture, DDD, Repository, UseCase, OOP</PackageTags>
-    <Version>0.0.7</Version>
+    <Version>0.0.8</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Best.Practices.Core</Title>
     <Description>A package to complete development with DDD and Clean Arquitechure aproach</Description>

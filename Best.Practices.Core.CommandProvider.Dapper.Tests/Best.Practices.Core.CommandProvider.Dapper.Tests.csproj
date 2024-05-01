@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="EntityCommands\" />
+    <Compile Remove="EntityCommands\**" />
+    <EmbeddedResource Remove="EntityCommands\**" />
+    <None Remove="EntityCommands\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
-namespace Best.Practices.Core.Presentaton.AspNetCoreApi.Configurations
+namespace Best.Practices.Core.Presentation.AspNetCoreApi.Configurations
 {
     public static class DefaultApiConfiguration
     {

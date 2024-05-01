@@ -69,8 +69,8 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
                         parameterNames += CommonConstants.StringComma + CommonConstants.StringEnter;
                     }
 
-                    fieldsToInsert += entityParameter.Key;
-                    parameterNames += DAPPER_PARAMETER_INDICATOR + entityParameter.Key;
+                    fieldsToInsert += tableColumnDefinition.DbFieldName;
+                    parameterNames += DAPPER_PARAMETER_INDICATOR + tableColumnDefinition.DbFieldName;
 
                     dapperParameters.AddNullable(tableColumnDefinition.DbFieldName, GetParameterValue(entityParameter.Key, entityParameter.Value), size: tableColumnDefinition.Size);
                 }
@@ -172,30 +172,48 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
         public CommandDefinition UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
            IBaseEntity baseEntity,
-           DapperTableDefinition tableDefinition)
+           DapperTableDefinition tableDefinition,
+           IDictionary<string, IBaseEntity> parentEntities = null)
         {
 
             return UpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 baseEntity,
                 new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
-                tableDefinition);
+                tableDefinition,
+                parentEntities);
         }
 
         public CommandDefinition InsertCommandFromEntityProperties(
             IBaseEntity baseEntity,
-            DapperTableDefinition tableDefinition)
+            DapperTableDefinition tableDefinition,
+            IDictionary<string, IBaseEntity> parentEntities = null)
         {
             var insertableProperties = baseEntity.GetPropertiesToPersist();
 
+            if (parentEntities is not null)
+                AddParentEntitiesAsEntityPropertiesToPersist(insertableProperties, parentEntities);
+
             return InsertCommandFromParameters(insertableProperties, tableDefinition);
+        }
+
+        private void AddParentEntitiesAsEntityPropertiesToPersist(IDictionary<string, object> propertiesToPersist, IDictionary<string, IBaseEntity> parentEntities)
+        {
+            foreach (var parentEntity in parentEntities)
+            {
+                propertiesToPersist[parentEntity.Key] = parentEntity;
+            }
         }
 
         public CommandDefinition UpdateCommandByEntityUpdatedPropertiesWithCriteria(
             IBaseEntity baseEntity,
             Dictionary<string, object> filterCriteria,
-            DapperTableDefinition tableDefinitions)
+            DapperTableDefinition tableDefinitions,
+            IDictionary<string, IBaseEntity> parentEntities = null)
         {
             var updatedProperties = baseEntity.GetPropertiesToPersist();
+
+            if (parentEntities is not null)
+                AddParentEntitiesAsEntityPropertiesToPersist(updatedProperties, parentEntities);
 
             return UpdateCommandFromParameters(updatedProperties, tableDefinitions, filterCriteria);
         }
@@ -242,7 +260,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             return new CommandDefinition(deleteScript, parameters);
         }
 
-        public CommandDefinition? GetCommandDefinitionByState<TEntity>(TEntity entity, DapperTableDefinition tableDefinition)
+        public CommandDefinition? GetCommandDefinitionByState<TEntity>(TEntity entity, DapperTableDefinition tableDefinition, IDictionary<string, IBaseEntity> parentEntities = null)
              where TEntity : IBaseEntity
         {
             CommandDefinition? commandDefinition = null;
@@ -250,10 +268,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             switch (entity.State)
             {
                 case EntityState.New:
-                    commandDefinition = InsertCommandFromEntityProperties(entity, tableDefinition);
+                    commandDefinition = InsertCommandFromEntityProperties(entity, tableDefinition, parentEntities);
                     break;
                 case EntityState.Updated:
-                    commandDefinition = UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(entity, tableDefinition);
+                    commandDefinition = UpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(entity, tableDefinition, parentEntities);
                     break;
                 case EntityState.Deleted:
                     commandDefinition = DeleteCommandWithEntityAndIdCriteria(entity, tableDefinition);

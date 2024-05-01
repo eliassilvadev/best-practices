@@ -6,10 +6,10 @@
     <PackageTags>CleanArchitecture,Presentation,AspNet.Core</PackageTags>
     <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
     <Authors>Elias Silva</Authors>
-    <Version>0.0.7</Version>
+    <Version>0.0.8</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<IsPackable>true</IsPackable>
-	<Title>Best.Practices.Core.Presentaton.AspNetCoreApi</Title>
+	<Title>Best.Practices.Core.Presentation.AspNetCoreApi</Title>
 	<Description>A package to develop rest apis with AspNet.Core</Description>
   </PropertyGroup>
 

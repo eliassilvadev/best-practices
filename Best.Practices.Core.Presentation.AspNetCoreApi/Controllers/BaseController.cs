@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 
-namespace Best.Practices.Core.Presentaton.AspNetCoreApi.Controllers
+namespace Best.Practices.Core.Presentation.AspNetCoreApi.Controllers
 {
     public class BaseController : Controller
     {

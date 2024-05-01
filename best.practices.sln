@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Command
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.CommandProvider.Dapper.Tests", "Best.Practices.Core.CommandProvider.Dapper.Tests\Best.Practices.Core.CommandProvider.Dapper.Tests.csproj", "{D37B2030-0F41-47E6-8E12-561AF18D77FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Best.Practices.Core.Presentaton.AspNetCoreApi", "Best.Practices.Core.Presentaton.AspNetCoreApi\Best.Practices.Core.Presentaton.AspNetCoreApi.csproj", "{F4F9A19B-F9DE-4E11-B811-38BE08F9DF71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Presentation.AspNetCoreApi", "Best.Practices.Core.Presentation.AspNetCoreApi\Best.Practices.Core.Presentation.AspNetCoreApi.csproj", "{F4F9A19B-F9DE-4E11-B811-38BE08F9DF71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
