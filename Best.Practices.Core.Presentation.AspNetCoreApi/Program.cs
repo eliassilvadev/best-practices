@@ -1,4 +1,4 @@
-using Best.Practices.Core.Presentaton.AspNetCoreApi.Configurations;
+using Best.Practices.Core.Presentation.AspNetCoreApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
