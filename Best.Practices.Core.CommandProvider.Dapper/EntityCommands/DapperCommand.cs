@@ -200,7 +200,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
         {
             foreach (var parentEntity in parentEntities)
             {
-                propertiesToPersist[parentEntity.Key] = parentEntity;
+                propertiesToPersist[parentEntity.Key] = parentEntity.Value;
             }
         }
 
