@@ -1,6 +1,7 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.EntityCommands;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions;
+using Best.Practices.Core.Domain.Models.Interfaces;
 using Dapper;
 using System.Data;
 
@@ -26,7 +27,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             foreach (var child in entity.Childs.AllItems)
             {
-                var commandDefinition = GetCommandDefinitionByState(child, DapperChildEntityTestTableDefinition.TableDefinition);
+                var commandDefinition = GetCommandDefinitionByState(
+                    child,
+                    DapperChildEntityTestTableDefinition.TableDefinition,
+                    new Dictionary<string, IBaseEntity>() { { "ParentEntity", entity } });
 
                 if (commandDefinition.HasValue)
                     commandDefinitions.Add(commandDefinition.Value);
