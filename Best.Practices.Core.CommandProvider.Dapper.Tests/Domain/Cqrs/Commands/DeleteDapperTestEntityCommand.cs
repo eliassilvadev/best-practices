@@ -1,6 +1,7 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.EntityCommands;
 using Best.Practices.Core.CommandProvider.Dapper.Extensions;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
+using Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions;
 using Dapper;
 using System.Data;
 
@@ -10,12 +11,13 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
     {
         public DeleteDapperTestEntityCommand(
             IDbConnection connection,
-            DapperTestEntity affectedEntity
-            ) : base(connection, affectedEntity)
+            DapperTestEntity affectedEntity)
+            : base(connection, affectedEntity)
         {
+            AddTypeMapping(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
         }
 
-        public override IList<CommandDefinition> GetCommandDefinitions(DapperTestEntity entity)
+        public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
         {
             var commandDefinitions = new List<CommandDefinition>();
 

@@ -35,7 +35,8 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions
                 {
                     DbFieldName = "ParentEntityId",
                     EntityFieldName = "ParentEntity",
-                    Type = DbType.Guid
+                    Type = DbType.Guid,
+                    IsParentEntity = true
                 }
             }
         };

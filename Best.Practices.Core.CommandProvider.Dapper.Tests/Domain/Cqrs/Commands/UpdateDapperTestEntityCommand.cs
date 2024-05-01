@@ -1,7 +1,6 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.EntityCommands;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions;
-using Best.Practices.Core.Domain.Models.Interfaces;
 using Dapper;
 using System.Data;
 
@@ -11,32 +10,25 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
     {
         public UpdateDapperTestEntityCommand(
             IDbConnection connection,
-            DapperTestEntity affectedEntity
-            ) : base(connection, affectedEntity)
+            DapperTestEntity affectedEntity)
+            : base(connection, affectedEntity)
         {
+
+            AddTypeMapping(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
+
+            AddTypeMapping(nameof(DapperChildEntityTest), DapperChildEntityTestTableDefinition.TableDefinition)
+                .WithParentEntity("ParentEntity", affectedEntity);
         }
 
-        public override IList<CommandDefinition> GetCommandDefinitions(DapperTestEntity entity)
+        public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
         {
-            var commandDefinitions = base.GetCommandDefinitions(entity);
+            base.CreateCommandDefinitions(entity);
 
-            var updateCommandDefinition = GetCommandDefinitionByState(entity, DapperTestEntityTableDefinition.TableDefinition);
+            CreateCommandDefinitionByState(entity);
 
-            if (updateCommandDefinition.HasValue)
-                commandDefinitions.Add(updateCommandDefinition.Value);
+            CreateCommandDefinitionByState(entity.Childs.AllItems);
 
-            foreach (var child in entity.Childs.AllItems)
-            {
-                var commandDefinition = GetCommandDefinitionByState(
-                    child,
-                    DapperChildEntityTestTableDefinition.TableDefinition,
-                    new Dictionary<string, IBaseEntity>() { { "ParentEntity", entity } });
-
-                if (commandDefinition.HasValue)
-                    commandDefinitions.Add(commandDefinition.Value);
-            }
-
-            return commandDefinitions;
+            return CommandDefinitions;
         }
     }
 }

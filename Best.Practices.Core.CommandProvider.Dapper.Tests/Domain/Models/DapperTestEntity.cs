@@ -12,7 +12,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models
 
         public DapperTestEntity()
         {
-            Childs = new EntityList<DapperChildEntityTest>();
+            Childs = new EntityList<DapperChildEntityTest>(this);
         }
     }
 }

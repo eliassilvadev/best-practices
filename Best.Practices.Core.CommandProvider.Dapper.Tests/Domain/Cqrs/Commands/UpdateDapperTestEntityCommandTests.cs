@@ -32,7 +32,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void GetCommandDefinitions_EntityIsUpdated_ReturnsUpdateSqlScript()
+        public void CreateCommandDefinitions_EntityIsUpdated_ReturnsUpdateSqlScript()
         {
             const string expectedUpdateSql = "Update EntityTestTable Set\nCode = @Code,\nName = @Name\nWhere\nId = @Id;";
 
@@ -46,14 +46,14 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
-            var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
+            var commandDefinitions = _command.CreateCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(1);
             commandDefinitions[0].CommandText.Should().BeEquivalentTo(expectedUpdateSql);
         }
 
         [Fact]
-        public void GetCommandDefinitions_EntityHasOnlyOneUpdatedField_ReturnsUpdateSqlScript()
+        public void CreateCommandDefinitions_EntityHasOnlyOneUpdatedField_ReturnsUpdateSqlScript()
         {
             const string expectedUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
 
@@ -66,14 +66,14 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([]);
 
-            var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
+            var commandDefinitions = _command.CreateCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(1);
             commandDefinitions[0].CommandText.Should().BeEquivalentTo(expectedUpdateSql);
         }
 
         [Fact]
-        public void GetCommandDefinitions_EntityHasAUpdatedChild_ReturnCommandsForAgregatedRootAndChild()
+        public void CreateCommandDefinitions_EntityHasAUpdatedChild_ReturnCommandsForAgregatedRootAndChild()
         {
             const string expectedAgregatedRootUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
             const string expectedChildUpdateSql = "Update ChildEntityTestTable Set\nNumber = @Number,\nParentEntityId = @ParentEntityId\nWhere\nId = @Id;";
@@ -94,7 +94,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns(childEntityUpdatedProperties);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
-            var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
+            var commandDefinitions = _command.CreateCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(2);
             commandDefinitions[0].CommandText.Should().BeEquivalentTo(expectedAgregatedRootUpdateSql);
@@ -102,7 +102,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void GetCommandDefinitions_EntityHasAnNewChild_ReturnCommandsForAgregatedRootAndChild()
+        public void CreateCommandDefinitions_EntityHasAnNewChild_ReturnCommandsForAgregatedRootAndChild()
         {
             const string expectedAgregatedRootUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
             const string expectedChildInsertSql = "Insert Into ChildEntityTestTable(\nNumber,\nDescription,\nParentEntityId)\nValues(\n@Number,\n@Description,\n@ParentEntityId);";
@@ -127,7 +127,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             var d = DapperChildEntityTestTableDefinition.TableDefinition;
             var d2 = DapperTestEntityTableDefinition.TableDefinition;
 
-            var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
+            var commandDefinitions = _command.CreateCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(2);
             commandDefinitions[0].CommandText.Should().BeEquivalentTo(expectedAgregatedRootUpdateSql);
@@ -135,7 +135,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void UpdateCommandByEntityUpdatedPropertiesWithCriteria_Always_ReturnsUpdateCommandDefinition()
+        public void CreateAnUpdateCommandByEntityUpdatedPropertiesWithCriteria_Always_ReturnsUpdateCommandDefinition()
         {
             const string expectedUpdateSql = "Update EntityTestTable Set\nName = @Name,\nCode = @Code\nWhere\nName = @Name\nAnd Code is null;";
 
@@ -154,16 +154,15 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _entity.Setup(x => x.State).Returns(EntityState.Updated);
             _entity.Setup(x => x.GetPropertiesToPersist()).Returns(entityUpdatedProperties);
 
-            var commandDefinition = _command.UpdateCommandByEntityUpdatedPropertiesWithCriteria(
+            var commandDefinition = _command.CreateAnUpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 _entity.Object,
-                updateCriteria,
-                DapperTestEntityTableDefinition.TableDefinition);
+                updateCriteria);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedUpdateSql);
         }
 
         [Fact]
-        public void GetCommandDefinitions_EntityHasADeletedChild_ReturnCommandsForAgregatedRootAndChild()
+        public void CreateCommandDefinitions_EntityHasADeletedChild_ReturnCommandsForAgregatedRootAndChild()
         {
             const string expectedAgregatedRootUpdateSql = "Update EntityTestTable Set\nName = @Name\nWhere\nId = @Id;";
             const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nId = @Id;";
@@ -179,7 +178,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns([]);
             _entity.Setup(x => x.Childs).Returns([_childEntity.Object]);
 
-            var commandDefinitions = _command.GetCommandDefinitions(_entity.Object);
+            var commandDefinitions = _command.CreateCommandDefinitions(_entity.Object);
 
             commandDefinitions.Should().HaveCount(2);
             commandDefinitions[0].CommandText.Should().BeEquivalentTo(expectedAgregatedRootUpdateSql);
@@ -187,22 +186,20 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void DeleteCommandWithEntityId_Always_ReturnsDeleteCommandDefinition()
+        public void CreateADeleteCommandWithEntityAndIdCriteria_Always_ReturnsDeleteCommandDefinition()
         {
-            const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nId = @Id;";
+            const string expectedChildDeleteSql = "Delete From\nEntityTestTable\nWhere\nId = @Id;";
 
             _entity.Setup(x => x.State).Returns(EntityState.Deleted);
             _entity.Setup(x => x.Childs).Returns([]);
 
-            var commandDefinition = _command.DeleteCommandWithEntityAndIdCriteria(
-                _entity.Object,
-                DapperChildEntityTestTableDefinition.TableDefinition);
+            var commandDefinition = _command.CreateADeleteCommandWithEntityAndIdCriteria(_entity.Object);
 
             commandDefinition.CommandText.Should().BeEquivalentTo(expectedChildDeleteSql);
         }
 
         [Fact]
-        public void DeleteCommandWithCriteria_Always_ReturnsDeleteCommandDefinition()
+        public void CreateADeleteCommandWithCriteria_Always_ReturnsDeleteCommandDefinition()
         {
             const string expectedChildDeleteSql = "Delete From\nChildEntityTestTable\nWhere\nNumber = @Number\nAnd Description is null;";
 
@@ -214,7 +211,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             _childEntity.Setup(x => x.GetPropertiesToPersist()).Returns([]);
 
-            var commandDefinition = _command.DeleteCommandWithCriteria(
+            var commandDefinition = _command.CreateADeleteCommandWithCriteria(
                 deleteCriteria,
                 DapperChildEntityTestTableDefinition.TableDefinition);
 
@@ -222,7 +219,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void DeleteCommandWithCriteria_WhenHasAEntityInAProperty_ReturnsDeleteCommandDefinition()
+        public void CreateADeleteCommandWithCriteria_WhenHasAEntityInAProperty_ReturnsDeleteCommandDefinition()
         {
             var entityId = Guid.NewGuid();
             const string expectedChildDeleteSql = "Delete From\nEntityTestTable2\nWhere\nChildEntity_Id = @ChildEntity_Id;";
@@ -236,7 +233,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
                 { nameof(DapperTestEntity2.ChildEntity), new DapperTestEntity() }
             };
 
-            var commandDefinition = _command.DeleteCommandWithCriteria(
+            var commandDefinition = _command.CreateADeleteCommandWithCriteria(
                 deleteCriteria,
                 DapperTestEntity2TableDefinition.TableDefinition);
 
@@ -244,7 +241,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
         }
 
         [Fact]
-        public void DeleteCommandWithCriteria_WhenHasAEntityInAPropertyAndColumnDefinitionHasSubProperty_ReturnsDeleteCommandDefinition()
+        public void CreateADeleteCommandWithCriteria_WhenHasAEntityInAPropertyAndColumnDefinitionHasSubProperty_ReturnsDeleteCommandDefinition()
         {
             var entityId = Guid.NewGuid();
             const string expectedChildDeleteSql = "Delete From\nEntityTestTable2\nWhere\nChildEntity2_Id = @ChildEntity2_Id;";
@@ -258,7 +255,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
                 { "ChildEntity2.Id", new DapperTestEntity() }
             };
 
-            var commandDefinition = _command.DeleteCommandWithCriteria(
+            var commandDefinition = _command.CreateADeleteCommandWithCriteria(
                 deleteCriteria,
                 DapperTestEntity2TableDefinition.TableDefinition);
 
