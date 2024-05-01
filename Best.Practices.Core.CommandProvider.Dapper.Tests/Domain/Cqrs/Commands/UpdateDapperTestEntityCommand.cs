@@ -1,7 +1,6 @@
 ﻿using Best.Practices.Core.CommandProvider.Dapper.EntityCommands;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Models;
 using Best.Practices.Core.CommandProvider.Dapper.Tests.TableDefinitions;
-using Best.Practices.Core.Domain.Models.Interfaces;
 using Dapper;
 using System.Data;
 
@@ -15,8 +14,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
             : base(connection, affectedEntity)
         {
 
-            _entityTableTypeMappings.Add(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
-            _entityTableTypeMappings.Add(nameof(DapperChildEntityTest), DapperChildEntityTestTableDefinition.TableDefinition);
+            AddTypeMapping(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
+
+            AddTypeMapping(nameof(DapperChildEntityTest), DapperChildEntityTestTableDefinition.TableDefinition)
+                .WithParentEntity("ParentEntity", affectedEntity);
         }
 
         public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)
@@ -25,12 +26,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
 
             CreateCommandDefinitionByState(entity);
 
-            foreach (var child in entity.Childs.AllItems)
-            {
-                CreateCommandDefinitionByState(
-                    child,
-                    new Dictionary<string, IBaseEntity>() { { "ParentEntity", entity } });
-            }
+            CreateCommandDefinitionByState(entity.Childs.AllItems);
 
             return CommandDefinitions;
         }

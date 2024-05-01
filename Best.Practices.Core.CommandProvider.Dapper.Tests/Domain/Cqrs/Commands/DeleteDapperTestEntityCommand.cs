@@ -11,10 +11,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.Tests.Domain.Cqrs.Commands
     {
         public DeleteDapperTestEntityCommand(
             IDbConnection connection,
-            DapperTestEntity affectedEntity
-            ) : base(connection, affectedEntity)
+            DapperTestEntity affectedEntity)
+            : base(connection, affectedEntity)
         {
-            _entityTableTypeMappings.Add(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
+            AddTypeMapping(nameof(DapperTestEntity), DapperTestEntityTableDefinition.TableDefinition);
         }
 
         public override IList<CommandDefinition> CreateCommandDefinitions(DapperTestEntity entity)

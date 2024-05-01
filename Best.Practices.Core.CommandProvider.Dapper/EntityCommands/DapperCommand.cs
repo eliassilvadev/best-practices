@@ -15,19 +15,37 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 {
     public class DapperCommand<Entity> : IEntityCommand where Entity : IBaseEntity
     {
+        protected class EntityTableMapping
+        {
+            public DapperTableDefinition TableDefinition { get; set; }
+            public Dictionary<string, IBaseEntity> ParentEntities { get; set; }
+
+            public EntityTableMapping()
+            {
+                ParentEntities = new Dictionary<string, IBaseEntity>();
+            }
+
+            public EntityTableMapping WithParentEntity(string entityFieldName, IBaseEntity baseEntity)
+            {
+                ParentEntities[entityFieldName] = baseEntity;
+
+                return this;
+            }
+        };
+
         const char DAPPER_PARAMETER_INDICATOR = '@';
 
         protected readonly IDbConnection _connection;
         public IList<CommandDefinition> CommandDefinitions { get; protected set; }
 
-        protected readonly Dictionary<string, DapperTableDefinition> _entityTableTypeMappings;
+        protected readonly Dictionary<string, EntityTableMapping> _entityTableTypeMappings;
         public IBaseEntity AffectedEntity { get; }
         public DapperCommand(IDbConnection connection, Entity affectedEntity)
         {
             _connection = connection;
             AffectedEntity = affectedEntity;
             CommandDefinitions = new List<CommandDefinition>();
-            _entityTableTypeMappings = new Dictionary<string, DapperTableDefinition>();
+            _entityTableTypeMappings = new Dictionary<string, EntityTableMapping>();
         }
 
         public virtual async Task<bool> ExecuteAsync()
@@ -50,6 +68,15 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             }
 
             return sucess;
+        }
+
+        protected EntityTableMapping AddTypeMapping(string typeName, DapperTableDefinition tableDefinition)
+        {
+            var entityTypeMapping = new EntityTableMapping() { TableDefinition = tableDefinition };
+
+            _entityTableTypeMappings.Add(typeName, entityTypeMapping);
+
+            return entityTypeMapping;
         }
 
         protected void AddCommandDefinition(CommandDefinition? commandDefinition)
@@ -190,29 +217,29 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             return value;
         }
 
-        public CommandDefinition CreateAnUpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(
-           IBaseEntity baseEntity,
-           IDictionary<string, IBaseEntity> parentEntities = null)
+        public CommandDefinition CreateAnUpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(IBaseEntity baseEntity)
         {
 
             return CreateAnUpdateCommandByEntityUpdatedPropertiesWithCriteria(
                 baseEntity,
-                new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
-                parentEntities);
+                new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } });
         }
 
-        public CommandDefinition CreateAnInsertCommandFromEntityProperties(
-            IBaseEntity baseEntity,
-            IDictionary<string, IBaseEntity> parentEntities = null)
+        public CommandDefinition CreateAnInsertCommandFromEntityProperties(IBaseEntity baseEntity)
         {
             var insertableProperties = baseEntity.GetPropertiesToPersist();
+
+            var parentEntities = GetParentEntities(baseEntity.GetType());
 
             if (parentEntities is not null)
                 AddParentEntitiesAsEntityPropertiesToPersist(insertableProperties, parentEntities);
 
-            var tableDefinition = GetTableDefinitionByMappedType(baseEntity.GetType());
+            var entityTableMapping = GetTableDefinitionByMappedType(baseEntity.GetType());
 
-            return CreateAnInsertCommandFromParameters(insertableProperties, tableDefinition);
+            if (entityTableMapping is null)
+                throw new CommandExecutionException(CommonConstants.ErrorMessages.EntityMappingError.Format(baseEntity.GetType().Name));
+
+            return CreateAnInsertCommandFromParameters(insertableProperties, entityTableMapping.TableDefinition);
         }
 
         private void AddParentEntitiesAsEntityPropertiesToPersist(IDictionary<string, object> propertiesToPersist, IDictionary<string, IBaseEntity> parentEntities)
@@ -225,39 +252,59 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
         public CommandDefinition CreateAnUpdateCommandByEntityUpdatedPropertiesWithCriteria(
             IBaseEntity baseEntity,
-            Dictionary<string, object> filterCriteria,
-            IDictionary<string, IBaseEntity> parentEntities = null)
+            Dictionary<string, object> filterCriteria)
         {
             var updatedProperties = baseEntity.GetPropertiesToPersist();
+
+            var parentEntities = GetParentEntities(baseEntity.GetType());
 
             if (parentEntities is not null)
                 AddParentEntitiesAsEntityPropertiesToPersist(updatedProperties, parentEntities);
 
-            var tableDefinition = GetTableDefinitionByMappedType(baseEntity.GetType());
+            var entityTableMapping = GetTableDefinitionByMappedType(baseEntity.GetType());
 
-            return CreateAnUpdateCommandFromParameters(updatedProperties, tableDefinition, filterCriteria);
+            if (entityTableMapping is null)
+                throw new CommandExecutionException(CommonConstants.ErrorMessages.EntityMappingError.Format(baseEntity.GetType().Name));
+
+            return CreateAnUpdateCommandFromParameters(updatedProperties, entityTableMapping.TableDefinition, filterCriteria);
+        }
+
+        private IDictionary<string, IBaseEntity> GetParentEntities(Type type)
+        {
+            var entityTableMapping = GetTableDefinitionByMappedType(type);
+
+            if (entityTableMapping is null)
+                return null;
+
+            return entityTableMapping.ParentEntities;
         }
 
         public CommandDefinition CreateADeleteCommandWithEntityAndIdCriteria(
           IBaseEntity baseEntity)
         {
-            var tableDefinition = GetTableDefinitionByMappedType(baseEntity.GetType());
+            var entityTableMapping = GetTableDefinitionByMappedType(baseEntity.GetType());
+
+            if (entityTableMapping is null)
+                throw new CommandExecutionException(CommonConstants.ErrorMessages.EntityMappingError.Format(baseEntity.GetType().Name));
 
             return CreateADeleteCommandWithCriteria(
                 new Dictionary<string, object>() { { nameof(baseEntity.Id), baseEntity.Id } },
-                tableDefinition);
+                entityTableMapping.TableDefinition);
         }
 
-        private DapperTableDefinition GetTableDefinitionByMappedType(Type type)
+        private EntityTableMapping GetTableDefinitionByMappedType(Type type)
         {
             var typeName = type.Name;
 
             if (typeof(IProxyTargetAccessor).IsAssignableFrom(type))
                 typeName = typeName.Substring(0, typeName.Length - 5);// removes "Proxy" sufix
 
-            _entityTableTypeMappings.TryGetValue(typeName, out var tableDefinition);
+            _entityTableTypeMappings.TryGetValue(typeName, out var entityTableMapping);
 
-            return tableDefinition;
+            if (entityTableMapping is null)
+                return null;
+
+            return entityTableMapping;
         }
 
         public CommandDefinition CreateADeleteCommandWithCriteria(
@@ -297,7 +344,23 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             return commandDefinition;
         }
 
-        public CommandDefinition? CreateCommandDefinitionByState<TEntity>(TEntity entity, IDictionary<string, IBaseEntity> parentEntities = null)
+        public IList<CommandDefinition> CreateCommandDefinitionByState<TEntity>(IEnumerable<TEntity> entities)
+            where TEntity : IBaseEntity
+        {
+            var commandDefinitions = new List<CommandDefinition>();
+
+            foreach (var entitty in entities)
+            {
+                var commandDefinition = CreateCommandDefinitionByState(entitty);
+
+                if (commandDefinition.HasValue)
+                    commandDefinitions.Add(commandDefinition.Value);
+            }
+
+            return commandDefinitions;
+        }
+
+        public CommandDefinition? CreateCommandDefinitionByState<TEntity>(TEntity entity)
              where TEntity : IBaseEntity
         {
             CommandDefinition? commandDefinition = null;
@@ -305,10 +368,10 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             switch (entity.State)
             {
                 case EntityState.New:
-                    commandDefinition = CreateAnInsertCommandFromEntityProperties(entity, parentEntities);
+                    commandDefinition = CreateAnInsertCommandFromEntityProperties(entity);
                     break;
                 case EntityState.Updated:
-                    commandDefinition = CreateAnUpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(entity, parentEntities);
+                    commandDefinition = CreateAnUpdateCommandFromEntityUpdatedPropertiesAndIdCriteria(entity);
                     break;
                 case EntityState.Deleted:
                     commandDefinition = CreateADeleteCommandWithEntityAndIdCriteria(entity);
