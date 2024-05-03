@@ -64,5 +64,12 @@ namespace Best.Practices.Core.Tests.Domain.Models
         public virtual string SampleName { get; set; }
 
         public virtual AgregatedRoot AgreegatedRoot { get; set; }
+
+        public virtual void SetSampleName(string sampleName)
+        {
+            SampleName = sampleName;
+
+            NotifyEntityObserversPropertyUpdate(nameof(SampleName), sampleName);
+        }
     }
 }

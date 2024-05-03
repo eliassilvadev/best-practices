@@ -1,8 +1,9 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
+using Best.Practices.Core.Domain.Observer;
 
 namespace Best.Practices.Core.Domain.Models.Interfaces
 {
-    public interface IBaseEntity
+    public interface IBaseEntity : IEntityObservable
     {
         Guid Id { get; }
 

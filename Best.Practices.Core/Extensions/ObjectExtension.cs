@@ -12,6 +12,18 @@
 
             return false;
         }
+        public static bool In<T>(this T inputObject, IEnumerable<T> values)
+        {
+            foreach (T obj in values)
+            {
+                if (inputObject.Equals(obj))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public static bool PropertyIsUpdated(this object inputObject, string propertyName, object propertyValue)
         {
