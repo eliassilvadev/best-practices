@@ -1,5 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Extensions;
 using System.Collections;
 
@@ -11,6 +12,7 @@ namespace Best.Practices.Core.Domain.Models
         public virtual EntityState State { get; protected set; }
         public virtual DateTime CreationDate { get; protected set; }
         public virtual Dictionary<string, object> PersistedValues { get; protected set; }
+        public virtual IList<IEntityObserver> Observers { get; protected set; }
 
         public static T InstantiateANewEntity<T>() where T : BaseEntity, new()
         {
@@ -40,6 +42,7 @@ namespace Best.Practices.Core.Domain.Models
             CreationDate = DateTime.UtcNow;
             State = EntityState.New;
             PersistedValues = [];
+            Observers = new List<IEntityObserver>();
         }
 
         protected void InitializePersistedValues(IBaseEntity entity)
@@ -115,7 +118,7 @@ namespace Best.Practices.Core.Domain.Models
         {
             var objectType = GetType();
             var properties = objectType.GetProperties()
-                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues)));
+                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues), nameof(Observers)));
 
             var updatedProperties = new Dictionary<string, object>();
 
@@ -135,7 +138,7 @@ namespace Best.Practices.Core.Domain.Models
         {
             var objectType = GetType();
             var properties = objectType.GetProperties()
-                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues)));
+                .Where(p => !p.Name.In(nameof(State), nameof(PersistedValues), nameof(PersistedValues), nameof(Observers)));
 
             var insertableProperties = new Dictionary<string, object>();
 
@@ -203,6 +206,29 @@ namespace Best.Practices.Core.Domain.Models
         public virtual object Clone()
         {
             return EntityClone();
+        }
+
+        public void AddObserver(IEntityObserver observer)
+        {
+            Observers.Add(observer);
+        }
+
+        public void RemoveObserver(IEntityObserver observer)
+        {
+            Observers.Remove(observer);
+        }
+
+        public void NotifyEntityObserversPropertyUpdate(string propertyName, object propertyValue)
+        {
+            bool propertyUpdated = true;
+
+            if (PersistedValues.TryGetValue(propertyName, out object oldPropertyValue))
+            {
+                propertyUpdated = PropertyIsUpdated(oldPropertyValue, propertyValue);
+            }
+
+            if (propertyUpdated)
+                Observers.ForEach(o => o.NotifyEntityPropertyUpdate(this, propertyName, propertyValue));
         }
     }
 }

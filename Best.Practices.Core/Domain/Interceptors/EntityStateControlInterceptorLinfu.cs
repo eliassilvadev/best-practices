@@ -1,6 +1,7 @@
 ﻿using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Models;
 using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Domain.Repositories.Interfaces;
 using Best.Practices.Core.Extensions;
 using LinFu.DynamicProxy;
@@ -8,7 +9,7 @@ using System.Collections;
 
 namespace Best.Practices.Core.Domain.Interceptors
 {
-    public class EntityStateControlInterceptorLinfu : IEntityStateObserver, IInvokeWrapper
+    public class EntityStateControlInterceptorLinfu : IEntityStateObserver, IEntityObserver, IInvokeWrapper
     {
         private readonly IBaseEntity _entity;
         private readonly List<Tuple<IBaseEntity, IBaseEntity>> _relatedSubParts;
@@ -53,7 +54,6 @@ namespace Best.Practices.Core.Domain.Interceptors
 
             foreach (var parent in parents)
             {
-
                 parent.Item1.SetStateAsUpdated();
 
                 UpdateParentState(parent.Item1);
@@ -64,10 +64,11 @@ namespace Best.Practices.Core.Domain.Interceptors
         {
             string methodName = info.TargetMethod.Name;
 
-            if (methodName.Substring(0, 4) != "set_" ||
-                methodName == "set_State" ||
-                methodName == "set_PersistedValues" ||
-                methodName == "set_PropertiesUpdated")
+            if ((methodName != "NotifyPropertyUpdated") &&
+                (methodName.Substring(0, 4) != "set_" ||
+                 methodName == "set_State" ||
+                 methodName == "set_PersistedValues" ||
+                 methodName == "set_PropertiesUpdated"))
             {
                 return false;
             }
@@ -78,6 +79,8 @@ namespace Best.Practices.Core.Domain.Interceptors
         public EntityStateControlInterceptorLinfu(IBaseEntity entity, EntityStateControlInterceptorLinfu parentInterceptor) : this(entity)
         {
             _parentInterceptor = parentInterceptor;
+
+            entity.AddObserver(this);
         }
 
         public EntityStateControlInterceptorLinfu(IBaseEntity entity)
@@ -103,12 +106,14 @@ namespace Best.Practices.Core.Domain.Interceptors
                 if (propertyValue is not null)
                 {
                     var propertyType = propertyValue.GetType();
-                    var proxy = _proxyFactory.CreateProxy(propertyType, new EntityStateControlInterceptorLinfu((BaseEntity)propertyValue, parentInterceptor));
+                    var interceptor = new EntityStateControlInterceptorLinfu((BaseEntity)propertyValue, parentInterceptor);
+                    var proxy = _proxyFactory.CreateProxy(propertyType, interceptor);
 
                     property.SetValue(realEntity, (BaseEntity)proxy, null);
 
                     InitializeNestedProxies(propertyType, (BaseEntity)proxy, (BaseEntity)propertyValue, parentInterceptor);
                     parentInterceptor._relatedSubParts.Add(new Tuple<IBaseEntity, IBaseEntity>(realEntity, propertyValue));
+                    interceptor._startStateControl = true;
                 }
             }
 
@@ -125,13 +130,15 @@ namespace Best.Practices.Core.Domain.Interceptors
                         if (entityListItem is not null)
                         {
                             var entityListItemType = entityListItem.GetType();
+                            var interceptor = new EntityStateControlInterceptorLinfu((BaseEntity)entityListItem, parentInterceptor);
 
-                            var proxy = _proxyFactory.CreateProxy(entityListItemType, new EntityStateControlInterceptorLinfu((BaseEntity)entityListItem, parentInterceptor));
+                            var proxy = _proxyFactory.CreateProxy(entityListItemType, interceptor);
 
                             entityList[i] = (BaseEntity)proxy;
 
                             InitializeNestedProxies(entityListItemType, (BaseEntity)entityList[i], (BaseEntity)entityListItem, parentInterceptor);
                             parentInterceptor._relatedSubParts.Add(new Tuple<IBaseEntity, IBaseEntity>(realEntity, (BaseEntity)entityListItem));
+                            interceptor._startStateControl = true;
                         }
                     }
                 }
@@ -147,6 +154,13 @@ namespace Best.Practices.Core.Domain.Interceptors
             _startStateControl = true;
 
             return (T)proxyEntity;
+        }
+
+        public void NotifyEntityPropertyUpdate(IBaseEntity entity, string propertyName, object propertyValue)
+        {
+            entity.SetStateAsUpdated();
+
+            UpdateParentState(entity);
         }
     }
 }
