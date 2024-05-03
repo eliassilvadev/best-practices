@@ -7,5 +7,10 @@
             foreach (T element in source)
                 action(element);
         }
+
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> collection)
+        {
+            return collection == null || !collection.Any();
+        }
     }
 }
