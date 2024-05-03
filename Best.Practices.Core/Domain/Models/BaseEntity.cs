@@ -66,8 +66,6 @@ namespace Best.Practices.Core.Domain.Models
 
                         entityProperty.State = EntityState.Unchanged;
 
-                        PersistedValues[property.Name] = propertyValue;
-
                         InitializePersistedValues(entityProperty);
                     }
                     else if (propertyType.Name.Contains("IEntityList") || propertyType.Name.Contains("EntityList"))
