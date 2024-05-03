@@ -231,7 +231,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             var parentEntities = GetParentEntities(baseEntity.GetType());
 
-            if (parentEntities.Any())
+            if (!parentEntities.IsNullOrEmpty())
                 AddParentEntitiesAsEntityPropertiesToPersist(insertableProperties, parentEntities);
 
             var entityTableMapping = GetTableDefinitionByMappedType(baseEntity.GetType());
@@ -258,7 +258,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
 
             var parentEntities = GetParentEntities(baseEntity.GetType());
 
-            if (parentEntities.Any())
+            if (!parentEntities.IsNullOrEmpty())
                 AddParentEntitiesAsEntityPropertiesToPersist(updatedProperties, parentEntities);
 
             var entityTableMapping = GetTableDefinitionByMappedType(baseEntity.GetType());
@@ -274,7 +274,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
             var entityTableMapping = GetTableDefinitionByMappedType(type);
 
             if (entityTableMapping is null)
-                return null;
+                return new Dictionary<string, IBaseEntity>();
 
             return entityTableMapping.ParentEntities;
         }

@@ -63,6 +63,8 @@ namespace Best.Practices.Core.Domain.Models
 
                         entityProperty.State = EntityState.Unchanged;
 
+                        PersistedValues[property.Name] = propertyValue;
+
                         InitializePersistedValues(entityProperty);
                     }
                     else if (propertyType.Name.Contains("IEntityList") || propertyType.Name.Contains("EntityList"))
@@ -121,11 +123,14 @@ namespace Best.Practices.Core.Domain.Models
 
             foreach (var property in properties)
             {
-                var oldPropertyValue = PersistedValues[property.Name];
-                var currentValue = property.GetValue(this, null);
+                if (PersistedValues.ContainsKey(property.Name))
+                {
+                    var oldPropertyValue = PersistedValues[property.Name];
+                    var currentValue = property.GetValue(this, null);
 
-                if (this.PropertyIsUpdated(oldPropertyValue, currentValue))
-                    updatedProperties[property.Name] = currentValue;
+                    if (this.PropertyIsUpdated(oldPropertyValue, currentValue))
+                        updatedProperties[property.Name] = currentValue;
+                }
             }
 
             return updatedProperties;
