@@ -21,6 +21,8 @@ namespace Best.Practices.Core.Domain.Models.Interfaces
 
         void SetStateAsUnchanged();
 
+        Dictionary<string, object> PersistedValues { get; set; }
+
         Dictionary<string, object> GetPropertiesToPersist();
     }
 }

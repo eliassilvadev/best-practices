@@ -66,7 +66,7 @@ namespace Best.Practices.Core.Domain.Models
 
                         entityProperty.State = EntityState.Unchanged;
 
-                        PersistedValues[property.Name] = propertyValue;
+                        entity.PersistedValues[property.Name] = propertyValue;
 
                         InitializePersistedValues(entityProperty);
                     }
@@ -85,7 +85,7 @@ namespace Best.Practices.Core.Domain.Models
                     }
                     else
                     {
-                        PersistedValues[property.Name] = propertyValue;
+                        entity.PersistedValues[property.Name] = propertyValue;
                     }
                 }
             }
