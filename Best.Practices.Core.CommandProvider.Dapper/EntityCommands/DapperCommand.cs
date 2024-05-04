@@ -6,8 +6,8 @@ using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Extensions;
-using Castle.DynamicProxy;
 using Dapper;
+using LinFu.DynamicProxy;
 using System.Data;
 using static Dapper.SqlMapper;
 
@@ -296,7 +296,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
         {
             var typeName = type.Name;
 
-            if (typeof(IProxyTargetAccessor).IsAssignableFrom(type))
+            if (typeof(IProxy).IsAssignableFrom(type))
                 typeName = typeName.Substring(0, typeName.Length - 5);// removes "Proxy" sufix
 
             _entityTableTypeMappings.TryGetValue(typeName, out var entityTableMapping);
