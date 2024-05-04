@@ -162,6 +162,37 @@ namespace Best.Practices.Core.Tests.Domain.Interceptors
         }
 
         [Fact]
+        public void CreateEntityWithStateControlAndCallRemoveAllFromList_EntityWithOtherEntityParts_ShouldCreateAProxyEntity()
+        {
+            //Arrange
+
+            var child = new ChildClassListItem()
+            {
+                SampleName = "ChildClassListItem"
+            };
+
+            var agregatedRoot = new AgregatedRoot()
+            {
+                Items = new EntityList<ChildClassListItem>()
+                {
+                    child
+                }
+            };
+
+            agregatedRoot.SetStateAsUnchanged();
+
+            var interceptor = new EntityStateControlInterceptorLinfu(agregatedRoot);
+
+            var proxyEntity = interceptor.CreateEntityWihStateControl(agregatedRoot);
+
+            //Act
+            agregatedRoot.Items.RemoveAll(x => x.SampleName == "ChildClassListItem");
+
+            //Assert
+            child.State.Should().Be(EntityState.Deleted);
+        }
+
+        [Fact]
         public void CreateEntityWithStateControl_CallMethdAMillionTimes_ShouldFinishLessThan3Seconds()
         {
             //Arrange
