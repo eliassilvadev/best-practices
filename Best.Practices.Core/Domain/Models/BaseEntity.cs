@@ -2,6 +2,7 @@
 using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Extensions;
+using LinFu.DynamicProxy;
 using System.Collections;
 
 namespace Best.Practices.Core.Domain.Models
@@ -25,15 +26,38 @@ namespace Best.Practices.Core.Domain.Models
             return entity;
         }
 
-        public static T InstantiateAnExistentEntity<T>(Guid id, DateTime creationDate) where T : BaseEntity, new()
+        public string GetTypeName(Type type)
         {
-            var entity = new T();
+            var typeName = type.Name;
 
-            entity.Id = id;
-            entity.CreationDate = creationDate;
-            entity.State = EntityState.Unchanged;
+            if (typeof(IProxy).IsAssignableFrom(type))
+                typeName = typeName.Substring(0, typeName.Length - 5);// removes "Proxy" sufix
 
-            return entity;
+            return typeName;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (GetTypeName(GetType()) != GetTypeName(obj.GetType()))
+            {
+                return false;
+            }
+
+            if (Id != Guid.Empty && ((BaseEntity)obj).Id != Guid.Empty && Id == ((BaseEntity)obj).Id)
+            {
+                return true;
+            }
+
+            return this == obj;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
 
         protected BaseEntity()
