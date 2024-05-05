@@ -15,17 +15,6 @@ namespace Best.Practices.Core.Domain.Models
         public virtual Dictionary<string, object> PersistedValues { get; protected set; }
         public virtual IList<IEntityObserver> Observers { get; protected set; }
 
-        public static T InstantiateANewEntity<T>() where T : BaseEntity, new()
-        {
-            var entity = new T();
-
-            entity.Id = Guid.NewGuid();
-            entity.CreationDate = DateTime.UtcNow;
-            entity.State = EntityState.New;
-
-            return entity;
-        }
-
         public string GetTypeName(Type type)
         {
             var typeName = type.Name;
@@ -181,7 +170,7 @@ namespace Best.Practices.Core.Domain.Models
             return insertableProperties;
         }
 
-        public void SetStateAsUpdated()
+        public virtual void SetStateAsUpdated()
         {
             if (State.In(EntityState.Unchanged, EntityState.Persisted))
             {
@@ -189,7 +178,7 @@ namespace Best.Practices.Core.Domain.Models
             }
         }
 
-        public void SetStateAsDeleted()
+        public virtual void SetStateAsDeleted()
         {
             if (State != EntityState.New)
             {
@@ -197,7 +186,7 @@ namespace Best.Practices.Core.Domain.Models
             }
         }
 
-        public void SetStateAsPersisted()
+        public virtual void SetStateAsPersisted()
         {
             switch (State)
             {
@@ -215,7 +204,7 @@ namespace Best.Practices.Core.Domain.Models
             };
         }
 
-        public void SetStateAsUnchanged()
+        public virtual void SetStateAsUnchanged()
         {
             State = EntityState.Unchanged;
 

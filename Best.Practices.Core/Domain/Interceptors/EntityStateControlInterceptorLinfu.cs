@@ -91,7 +91,7 @@ namespace Best.Practices.Core.Domain.Interceptors
             _relatedSubParts = [];
         }
 
-        private void InitializeNestedProxies(Type realType, IBaseEntity proxyEntity, IBaseEntity realEntity, EntityStateControlInterceptorLinfu parentInterceptor)
+        private void InitializeNestedProxies(Type realType, IBaseEntity realEntity, EntityStateControlInterceptorLinfu parentInterceptor)
         {
             var baseEntityProperties = realType.GetProperties()
                 .Where(p => p.PropertyType.IsSubclassOf(typeof(BaseEntity)));
@@ -106,12 +106,12 @@ namespace Best.Practices.Core.Domain.Interceptors
                 if (propertyValue is not null)
                 {
                     var propertyType = propertyValue.GetType();
-                    var interceptor = new EntityStateControlInterceptorLinfu((BaseEntity)propertyValue, parentInterceptor);
+                    var interceptor = new EntityStateControlInterceptorLinfu(propertyValue, parentInterceptor);
                     var proxy = _proxyFactory.CreateProxy(propertyType, interceptor);
 
                     property.SetValue(realEntity, (BaseEntity)proxy, null);
 
-                    InitializeNestedProxies(propertyType, (BaseEntity)proxy, (BaseEntity)propertyValue, parentInterceptor);
+                    InitializeNestedProxies(propertyType, propertyValue, parentInterceptor);
                     parentInterceptor._relatedSubParts.Add(new Tuple<IBaseEntity, IBaseEntity>(realEntity, propertyValue));
                     interceptor._startStateControl = true;
                 }
@@ -136,7 +136,7 @@ namespace Best.Practices.Core.Domain.Interceptors
 
                             entityList[i] = (BaseEntity)proxy;
 
-                            InitializeNestedProxies(entityListItemType, (BaseEntity)entityList[i], (BaseEntity)entityListItem, parentInterceptor);
+                            InitializeNestedProxies(entityListItemType, (BaseEntity)entityListItem, parentInterceptor);
                             parentInterceptor._relatedSubParts.Add(new Tuple<IBaseEntity, IBaseEntity>(realEntity, (BaseEntity)entityListItem));
                             interceptor._startStateControl = true;
                         }
@@ -149,7 +149,7 @@ namespace Best.Practices.Core.Domain.Interceptors
         {
             var proxyEntity = _proxyFactory.CreateProxy(entity.GetType(), this);
 
-            InitializeNestedProxies(entity.GetType(), (T)proxyEntity, entity, this);
+            InitializeNestedProxies(entity.GetType(), entity, this);
 
             _startStateControl = true;
 
