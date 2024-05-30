@@ -17,16 +17,6 @@ namespace Best.Practices.Core.Extensions
             return entity;
         }
 
-        public static IEnumerable<Entity> ThrowResourceNotFoundIfIsNullOrEmpty<Entity>(this IEnumerable<Entity> entities, string errorMessage) where Entity : IBaseEntity
-        {
-            if (entities.IsNullOrEmpty())
-            {
-                throw new ResourceNotFoundException(errorMessage);
-            }
-
-            return entities;
-        }
-
         public static Entity ThrowInvalidInputIfIsNotNull<Entity>(this Entity entity, string errorMessage) where Entity : IBaseEntity
         {
             if (entity is not null)
@@ -57,11 +47,33 @@ namespace Best.Practices.Core.Extensions
             return entity;
         }
 
-        public static IEnumerable<Entity> ThrowInvalidInputIfMatches<Entity>(this IEnumerable<Entity> entities, Predicate<Entity> match, string errorMessage) where Entity : IBaseEntity
+        public static IEnumerable<Entity> ThrowInvalidInputIfAtLeastAnItemMatches<Entity>(this IEnumerable<Entity> entities, Predicate<Entity> match, string errorMessage) where Entity : IBaseEntity
         {
             var matchedItems = entities.Where(i => match(i)).ToList();
 
             if (matchedItems.Count != CommonConstants.QuantityZeroItems)
+            {
+                throw new InvalidInputException(errorMessage);
+            }
+
+            return entities;
+        }
+
+        public static IEnumerable<Entity> ThrowInvalidInputIfAllItemsMatches<Entity>(this IEnumerable<Entity> entities, Predicate<Entity> match, string errorMessage) where Entity : IBaseEntity
+        {
+            var matchedItems = entities.Where(i => match(i)).ToList();
+
+            if (matchedItems.Count == entities.Count())
+            {
+                throw new InvalidInputException(errorMessage);
+            }
+
+            return entities;
+        }
+
+        public static IEnumerable<Entity> ThrowInvalidInputIfDoesNotMatch<Entity>(this IEnumerable<Entity> entities, Predicate<Entity> match, string errorMessage) where Entity : IBaseEntity
+        {
+            if (!entities.Any(i => match(i)))
             {
                 throw new InvalidInputException(errorMessage);
             }
@@ -87,18 +99,6 @@ namespace Best.Practices.Core.Extensions
             }
 
             return entity;
-        }
-
-        public static IEnumerable<Entity> ThrowInvalidInputIDoesNotMatc<Entity>(this IEnumerable<Entity> entities, Predicate<Entity> match, string errorMessage) where Entity : IBaseEntity
-        {
-            var matchedItems = entities.Where(i => match(i)).ToList();
-
-            if (matchedItems.Count == CommonConstants.QuantityZeroItems)
-            {
-                throw new InvalidInputException(errorMessage);
-            }
-
-            return entities;
         }
     }
 }
