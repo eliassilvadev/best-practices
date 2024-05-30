@@ -349,13 +349,33 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
         {
             var commandDefinitions = new List<CommandDefinition>();
 
-            foreach (var entitty in entities)
+            foreach (var entity in entities)
             {
-                var commandDefinition = CreateCommandDefinitionByState(entitty);
+                var commandDefinition = CreateCommandDefinitionByState(entity);
 
                 if (commandDefinition.HasValue)
                     commandDefinitions.Add(commandDefinition.Value);
             }
+
+            return commandDefinitions;
+        }
+
+        public IList<CommandDefinition> CreateCommandDefinitionByState<TEntity>(IEntityList<TEntity> entities)
+         where TEntity : IBaseEntity
+        {
+            var commandDefinitions = new List<CommandDefinition>();
+
+            foreach (var entity in entities.DeletedItems)
+            {
+                var commandDefinition = CreateCommandDefinitionByState(entity);
+
+                if (commandDefinition.HasValue)
+                    commandDefinitions.Add(commandDefinition.Value);
+            }
+
+            var updateAndInsertCommands = CreateCommandDefinitionByState(entities.Items);
+
+            commandDefinitions.AddRange(updateAndInsertCommands);
 
             return commandDefinitions;
         }

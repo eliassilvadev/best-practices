@@ -13,6 +13,7 @@
         public static readonly char CharEnter = '\n';
         public static readonly string StringComma = ",";
         public static readonly string StringEnter = "\n";
+        public static readonly TimeSpan DefaultApiTokenExpirationInMinutes = TimeSpan.FromMinutes(5);
 
         public static class ErrorCodes
         {

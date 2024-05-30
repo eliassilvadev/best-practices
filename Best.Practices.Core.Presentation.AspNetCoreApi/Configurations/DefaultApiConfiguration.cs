@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.ResponseCompression;
+﻿using Best.Practices.Core.Application.Services;
+using Best.Practices.Core.Application.Services.Interfaces;
+using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
@@ -6,6 +8,11 @@ namespace Best.Practices.Core.Presentation.AspNetCoreApi.Configurations
 {
     public static class DefaultApiConfiguration
     {
+        private static void MapDefaultApplicationServices(IServiceCollection service)
+        {
+            service.AddScoped<ITokenAuthentication, TokenAuthentication>();
+        }
+
         public static WebApplication Configure(WebApplicationBuilder builder)
         {
             // Add services to the container.
@@ -19,6 +26,7 @@ namespace Best.Practices.Core.Presentation.AspNetCoreApi.Configurations
             builder.Services.AddSwaggerGen();
             builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
             builder.Services.AddResponseCompression(options => { options.Providers.Add<GzipCompressionProvider>(); });
+            MapDefaultApplicationServices(builder.Services);
 
             var section = builder.Configuration.GetSection("AppSettings");
 
