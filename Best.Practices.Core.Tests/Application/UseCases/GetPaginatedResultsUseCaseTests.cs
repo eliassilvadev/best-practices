@@ -1,7 +1,7 @@
-﻿using Best.Practices.Core.Application.Dtos.Input;
+﻿using Best.Practices.Core.Application.Cqrs.QueryProvider;
+using Best.Practices.Core.Application.Dtos.Input;
 using Best.Practices.Core.Application.UseCases;
 using Best.Practices.Core.Common;
-using Best.Practices.Core.Domain.Cqrs.QueryProvider;
 using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Extensions;
 using Best.Practices.Core.Tests.Application.Dtos.Builders;
