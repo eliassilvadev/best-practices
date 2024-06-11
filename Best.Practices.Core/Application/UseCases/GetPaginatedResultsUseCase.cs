@@ -1,7 +1,7 @@
-﻿using Best.Practices.Core.Application.Dtos.Input;
+﻿using Best.Practices.Core.Application.Cqrs.QueryProvider;
+using Best.Practices.Core.Application.Dtos.Input;
 using Best.Practices.Core.Application.Dtos.Output;
 using Best.Practices.Core.Common;
-using Best.Practices.Core.Domain.Cqrs.QueryProvider;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Extensions;
 using FluentValidation;

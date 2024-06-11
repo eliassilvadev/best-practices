@@ -6,7 +6,7 @@
     <PackageTags>DDD,CommandProvider,CommandStack</PackageTags>
     <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
     <Authors>Elias Silva</Authors>
-    <Version>0.0.24</Version>
+    <Version>0.0.25</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Best.Practices.Core.CommandProvider.Dapper</Title>
     <Description>A package to develop command stack layer using Dapper</Description>
@@ -19,6 +19,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Best.Practices.Core\Best.Practices.Core.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="EntityCommands\" />
+    <Folder Include="CommandProviders\" />   
   </ItemGroup>
 
 </Project>

@@ -296,7 +296,7 @@ namespace Best.Practices.Core.CommandProvider.Dapper.EntityCommands
         {
             var typeName = type.Name;
 
-            if (typeof(IProxy).IsAssignableFrom(type))
+            if ((typeof(IProxy).IsAssignableFrom(type)) || typeName.EndsWith("Proxy"))
                 typeName = typeName.Substring(0, typeName.Length - 5);// removes "Proxy" sufix
 
             _entityTableTypeMappings.TryGetValue(typeName, out var entityTableMapping);
