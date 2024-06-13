@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core", "Best
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Tests", "Best.Practices.Core.Tests\Best.Practices.Core.Tests.csproj", "{CB7DBFC8-E4EB-438F-B0CE-569A643226C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.CommandProvider.Dapper", "Best.Practices.Core.CommandProvider.Dapper\Best.Practices.Core.CommandProvider.Dapper.csproj", "{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Cqrs.Dapper", "Best.Practices.Core.Cqrs.Dapper\Best.Practices.Core.Cqrs.Dapper.csproj", "{16118CF5-A86C-4B81-A6EE-E6C7E38E0763}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.CommandProvider.Dapper.Tests", "Best.Practices.Core.CommandProvider.Dapper.Tests\Best.Practices.Core.CommandProvider.Dapper.Tests.csproj", "{D37B2030-0F41-47E6-8E12-561AF18D77FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Cqrs.Dapper.Tests", "Best.Practices.Core.Cqrs.Dapper.Tests\Best.Practices.Core.Cqrs.Dapper.Tests.csproj", "{D37B2030-0F41-47E6-8E12-561AF18D77FB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Best.Practices.Core.Presentation.AspNetCoreApi", "Best.Practices.Core.Presentation.AspNetCoreApi\Best.Practices.Core.Presentation.AspNetCoreApi.csproj", "{F4F9A19B-F9DE-4E11-B811-38BE08F9DF71}"
 EndProject

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackageTags>DDD,Cqrs,CommandStack,QueryStack</PackageTags>
+    <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
+    <Authors>Elias Silva</Authors>
+    <Version>0.0.27</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Best.Practices.Core.Cqrs.Dapper</Title>
+    <Description>A package to develop command stack layer using Dapper</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Moq.Dapper" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Best.Practices.Core\Best.Practices.Core.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="EntityCommands\" />
+    <Folder Include="CommandProviders\" />
+    <Folder Include="QueryProviders\" />
+  </ItemGroup>
+
+</Project>
