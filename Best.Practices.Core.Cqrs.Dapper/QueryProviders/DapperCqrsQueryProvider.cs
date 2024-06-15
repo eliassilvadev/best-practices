@@ -1,4 +1,4 @@
-﻿using Best.Practices.Core.Application.Cqrs.QueryProvider;
+﻿using Best.Practices.Core.Application.Cqrs.QueryProviders;
 using Best.Practices.Core.Application.Dtos.Input;
 using System.Data;
 
