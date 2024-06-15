@@ -6,7 +6,7 @@
     <PackageTags>DDD,Cqrs,CommandStack,QueryStack</PackageTags>
     <RepositoryUrl>https://github.com/eliassilvadev/best-practices</RepositoryUrl>
     <Authors>Elias Silva</Authors>
-    <Version>0.0.27</Version>
+    <Version>0.0.28</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Best.Practices.Core.Cqrs.Dapper</Title>
     <Description>A package to develop command stack layer using Dapper</Description>

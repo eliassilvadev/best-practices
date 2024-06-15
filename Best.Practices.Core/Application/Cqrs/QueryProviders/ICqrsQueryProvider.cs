@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Application.Dtos.Input;
 
-namespace Best.Practices.Core.Application.Cqrs.QueryProvider
+namespace Best.Practices.Core.Application.Cqrs.QueryProviders
 {
     public interface ICqrsQueryProvider<ResultOutput>
     {
