@@ -3,6 +3,8 @@ using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Extensions;
 using LinFu.DynamicProxy;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 
 namespace Best.Practices.Core.Domain.Models
@@ -212,13 +214,37 @@ namespace Best.Practices.Core.Domain.Models
         }
         public virtual IBaseEntity EntityClone()
         {
-            var cloneEntity = (BaseEntity)this.DeepClone();
+            var cloneEntity = (BaseEntity)this.DeepClone(nameof(Id), nameof(CreationDate), nameof(State));
 
             cloneEntity.Id = Guid.NewGuid();
             cloneEntity.CreationDate = DateTime.UtcNow;
             cloneEntity.State = EntityState.New;
 
             return cloneEntity;
+        }
+
+        public virtual void Copy(IBaseEntity entity)
+        {
+            var serialized = JsonConvert.SerializeObject(
+                entity,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+
+            var json = JToken.Parse(serialized);
+
+            if (json[nameof(Id)] != null)
+                json[nameof(Id)].Parent.Remove();
+
+            if (json[nameof(CreationDate)] != null)
+                json[nameof(CreationDate)].Parent.Remove();
+
+            if (json[nameof(State)] != null)
+                json[nameof(State)].Parent.Remove();
+
+            JsonConvert.PopulateObject(json.ToString(), this);
         }
 
         public virtual object Clone()
