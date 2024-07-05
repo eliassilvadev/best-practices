@@ -1,8 +1,8 @@
-﻿using Best.Practices.Core.Domain.Models;
+﻿using Best.Practices.Core.Domain.Entities;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Tests.Common;
 
-namespace Best.Practices.Core.Tests.Domain.Models
+namespace Best.Practices.Core.Tests.Domain.Entities
 {
     public class SampleEntity : BaseEntity
     {

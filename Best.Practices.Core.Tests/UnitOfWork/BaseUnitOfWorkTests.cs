@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Cqrs;
+using Best.Practices.Core.Domain.Entities;
 using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.UnitOfWork;
 using FluentAssertions;

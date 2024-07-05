@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Cqrs.Dapper.TableDefinitions;
-using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Models;
+using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Entities;
 using System.Data;
 
 namespace Best.Practices.Core.Cqrs.Dapper.Tests.TableDefinitions

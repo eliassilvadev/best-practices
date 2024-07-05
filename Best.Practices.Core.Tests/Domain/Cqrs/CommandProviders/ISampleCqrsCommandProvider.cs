@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Domain.Cqrs.CommandProviders;
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Tests.Domain.Entities;
 
 namespace Best.Practices.Core.Tests.Domain.Cqrs.CommandProviders
 {

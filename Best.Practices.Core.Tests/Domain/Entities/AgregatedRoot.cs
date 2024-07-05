@@ -1,7 +1,7 @@
-﻿using Best.Practices.Core.Domain.Models;
+﻿using Best.Practices.Core.Domain.Entities;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Best.Practices.Core.Tests.Domain.Models
+namespace Best.Practices.Core.Tests.Domain.Entities
 {
     [ExcludeFromCodeCoverage]
     public class AgregatedRoot : BaseEntity

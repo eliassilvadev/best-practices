@@ -1,4 +1,4 @@
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Tests.Domain.Entities;
 
 namespace Best.Practices.Core.Tests.Application.Dtos.Builders
 {

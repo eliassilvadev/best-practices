@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Repositories;
 using Best.Practices.Core.Tests.Domain.Cqrs.CommandProviders;
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Tests.Domain.Entities;
 
 namespace Best.Practices.Core.Tests.Domain.Repositories.SampleRepository
 {

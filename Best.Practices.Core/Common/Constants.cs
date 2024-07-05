@@ -24,8 +24,11 @@
         {
             public static readonly string DefaultErrorMessage = $"{ErrorCodes.DefaultErrorCode};A unexpected error occurrs.";
             public static readonly string PageNumberMustBeLessOrEqualMaxPage = "001;The page number must be less than or equal to the maximum number of pages '{0}'.";
-            public static readonly string FieldIsRequired = "002;The field {0} is required.";
-            public static readonly string EntityMappingError = "003;There mapping for entity {0} is invalid.";
+            public static readonly string PropertyIsRequired = "002;The property {0} is required.";
+            public static readonly string PropertyIsInvalid = "003;The property {0} is invalid.";
+            public static readonly string EntityMappingError = "004;There mapping for entity {0} is invalid.";
+            public static readonly string PageNumberMustBeGreaterThanOrEqualToOne = "005;Page number must be greater than or equal to one.";
+            public static readonly string ItemsPerPageMustBeGreaterThanOrEqualToOne = "006;Items per page must be greater than or equal to one.";
         }
     }
 }

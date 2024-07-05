@@ -1,10 +1,10 @@
-﻿using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models;
+﻿using Best.Practices.Core.Domain.Entities;
+using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Tests.Application.Dtos.Builders;
 using FluentAssertions;
 using Xunit;
 
-namespace Best.Practices.Core.Tests.Domain.Models
+namespace Best.Practices.Core.Tests.Domain.Entities
 {
     public class EntityListTests
     {

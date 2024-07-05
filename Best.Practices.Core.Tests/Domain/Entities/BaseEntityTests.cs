@@ -1,10 +1,10 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models;
+using Best.Practices.Core.Domain.Entities;
 using FluentAssertions;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
-namespace Best.Practices.Core.Tests.Domain.Models
+namespace Best.Practices.Core.Tests.Domain.Entities
 {
     public class BaseEntityTests
     {

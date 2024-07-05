@@ -1,8 +1,8 @@
 ﻿using Best.Practices.Core.Domain.Cqrs;
 using Best.Practices.Core.Domain.Cqrs.CommandProviders;
 using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Domain.Repositories;
 using Best.Practices.Core.UnitOfWork.Interfaces;
 using Moq;

@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Common;
-using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Models;
+using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Entities;
 using Best.Practices.Core.Cqrs.Dapper.Tests.TableDefinitions;
 using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Exceptions;

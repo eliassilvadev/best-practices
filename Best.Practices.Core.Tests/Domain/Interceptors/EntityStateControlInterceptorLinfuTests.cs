@@ -1,7 +1,7 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Interceptors;
-using Best.Practices.Core.Domain.Models;
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Domain.Entities;
+using Best.Practices.Core.Tests.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 

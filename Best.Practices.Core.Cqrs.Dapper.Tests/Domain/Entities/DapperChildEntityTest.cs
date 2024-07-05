@@ -1,7 +1,7 @@
 ﻿
-using Best.Practices.Core.Domain.Models;
+using Best.Practices.Core.Domain.Entities;
 
-namespace Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Models
+namespace Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Entities
 {
     public class DapperChildEntityTest : BaseEntity
     {

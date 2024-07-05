@@ -1,7 +1,7 @@
-﻿using Best.Practices.Core.Domain.Models;
-using Best.Practices.Core.Domain.Models.Interfaces;
+﻿using Best.Practices.Core.Domain.Entities;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 
-namespace Best.Practices.Core.Tests.Domain.Models
+namespace Best.Practices.Core.Tests.Domain.Entities
 {
     public class SampleEntityWithChilds : BaseEntity
     {

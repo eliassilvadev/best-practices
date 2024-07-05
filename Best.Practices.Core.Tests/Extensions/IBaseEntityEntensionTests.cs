@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Tests.Domain.Entities;
 using FluentAssertions;
 using Xunit;
 
