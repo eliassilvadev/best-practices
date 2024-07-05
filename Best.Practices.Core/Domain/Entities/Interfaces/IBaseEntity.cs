@@ -1,7 +1,7 @@
 ﻿using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Observer;
 
-namespace Best.Practices.Core.Domain.Models.Interfaces
+namespace Best.Practices.Core.Domain.Entities.Interfaces
 {
     public interface IBaseEntity : IEntityObservable
     {

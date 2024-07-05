@@ -1,4 +1,4 @@
-﻿using Best.Practices.Core.Domain.Models.Interfaces;
+﻿using Best.Practices.Core.Domain.Entities.Interfaces;
 
 namespace Best.Practices.Core.Domain.Repositories.Interfaces
 {

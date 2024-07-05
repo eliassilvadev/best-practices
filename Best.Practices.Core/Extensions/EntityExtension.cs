@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Common;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Exceptions;
 using System.Linq.Expressions;
 

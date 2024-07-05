@@ -1,4 +1,4 @@
-﻿namespace Best.Practices.Core.Domain.Models.Interfaces
+﻿namespace Best.Practices.Core.Domain.Entities.Interfaces
 {
     public interface IEntityList<Entity> : IList<Entity>
     {

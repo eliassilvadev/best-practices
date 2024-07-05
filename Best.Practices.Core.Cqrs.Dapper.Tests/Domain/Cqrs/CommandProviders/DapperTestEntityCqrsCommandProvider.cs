@@ -1,7 +1,7 @@
 ﻿using Best.Practices.Core.Cqrs.Dapper.CommandProviders;
 using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Cqrs.CommandProviders.Commands;
 using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Cqrs.CommandProviders.Interfaces;
-using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Models;
+using Best.Practices.Core.Cqrs.Dapper.Tests.Domain.Entities;
 using Best.Practices.Core.Domain.Cqrs;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;

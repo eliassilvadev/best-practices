@@ -1,5 +1,5 @@
 ﻿using Best.Practices.Core.Configurations.JsonSerializer;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

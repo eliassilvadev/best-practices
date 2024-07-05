@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Domain.Cqrs;
 using Best.Practices.Core.Domain.Cqrs.CommandProviders;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using System.Data;
 
 namespace Best.Practices.Core.Cqrs.Dapper.CommandProviders

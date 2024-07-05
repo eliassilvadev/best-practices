@@ -2,7 +2,7 @@
 using Best.Practices.Core.Domain.Cqrs.CommandProviders;
 using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Interceptors;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Domain.Repositories.Interfaces;
 using Best.Practices.Core.UnitOfWork.Interfaces;
 

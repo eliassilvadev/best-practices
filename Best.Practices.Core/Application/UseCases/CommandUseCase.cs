@@ -1,4 +1,4 @@
-﻿using Best.Practices.Core.Domain.Models.Interfaces;
+﻿using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.UnitOfWork.Interfaces;
 

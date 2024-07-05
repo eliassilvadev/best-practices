@@ -2,7 +2,7 @@
 using Best.Practices.Core.Extensions;
 using Best.Practices.Core.Tests.Application.SampleUseCasesDtos;
 using Best.Practices.Core.Tests.Common;
-using Best.Practices.Core.Tests.Domain.Models;
+using Best.Practices.Core.Tests.Domain.Entities;
 using Best.Practices.Core.Tests.Domain.Repositories.SampleRepository;
 using Best.Practices.Core.UnitOfWork.Interfaces;
 

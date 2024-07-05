@@ -1,9 +1,9 @@
 ﻿using Best.Practices.Core.Common;
 using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using System.Collections;
 
-namespace Best.Practices.Core.Domain.Models
+namespace Best.Practices.Core.Domain.Entities
 {
     public class EntityList<Entity> : IEntityList<Entity>, ICollection, IList
         where Entity : IBaseEntity

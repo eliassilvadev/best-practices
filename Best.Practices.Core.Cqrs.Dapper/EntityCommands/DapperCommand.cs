@@ -2,8 +2,8 @@
 using Best.Practices.Core.Cqrs.Dapper.Extensions;
 using Best.Practices.Core.Cqrs.Dapper.TableDefinitions;
 using Best.Practices.Core.Domain.Cqrs;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Models.Interfaces;
 using Best.Practices.Core.Exceptions;
 using Best.Practices.Core.Extensions;
 using Dapper;

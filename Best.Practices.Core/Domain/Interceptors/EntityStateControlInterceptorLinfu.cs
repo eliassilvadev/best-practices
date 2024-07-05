@@ -1,6 +1,6 @@
 ﻿using Best.Practices.Core.Common;
-using Best.Practices.Core.Domain.Models;
-using Best.Practices.Core.Domain.Models.Interfaces;
+using Best.Practices.Core.Domain.Entities;
+using Best.Practices.Core.Domain.Entities.Interfaces;
 using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Domain.Repositories.Interfaces;
 using Best.Practices.Core.Extensions;
