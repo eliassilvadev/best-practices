@@ -21,8 +21,7 @@ namespace Best.Practices.Core.Extensions
 
             foreach (var ignoreProperty in ignoreProperties)
             {
-                if (json[ignoreProperty] != null)
-                    json[ignoreProperty].Parent.Remove();
+                json[ignoreProperty]?.Parent.Remove();
             }
 
             return (IBaseEntity)JsonConvert.DeserializeObject(

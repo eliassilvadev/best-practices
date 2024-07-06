@@ -9,7 +9,7 @@ using FluentValidation;
 namespace Best.Practices.Core.Application.UseCases
 {
     public class GetPaginatedResultsUseCase<QueryProvider, Output> : BaseUseCase<GetPaginatedResultsInput, PaginatedOutput<Output>>
-        where QueryProvider : ICqrsQueryProvider<Output>
+        where QueryProvider : IListItemOutputCqrsQueryProvider<Output>
     {
         private readonly QueryProvider _queryProvider;
         private readonly IValidator<GetPaginatedResultsInput> _inputValidator;
