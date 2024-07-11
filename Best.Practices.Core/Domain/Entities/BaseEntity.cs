@@ -1,5 +1,5 @@
-﻿using Best.Practices.Core.Domain.Enumerators;
-using Best.Practices.Core.Domain.Entities.Interfaces;
+﻿using Best.Practices.Core.Domain.Entities.Interfaces;
+using Best.Practices.Core.Domain.Enumerators;
 using Best.Practices.Core.Domain.Observer;
 using Best.Practices.Core.Extensions;
 using LinFu.DynamicProxy;
@@ -17,12 +17,12 @@ namespace Best.Practices.Core.Domain.Entities
         public virtual Dictionary<string, object> PersistedValues { get; protected set; }
         public virtual IList<IEntityObserver> Observers { get; protected set; }
 
-        public string GetTypeName(Type type)
+        public static string GetTypeName(Type type)
         {
             var typeName = type.Name;
 
             if (typeof(IProxy).IsAssignableFrom(type))
-                typeName = typeName.Substring(0, typeName.Length - 5);// removes "Proxy" sufix
+                typeName = typeName[..^5];// removes "Proxy" sufix
 
             return typeName;
         }
@@ -57,7 +57,7 @@ namespace Best.Practices.Core.Domain.Entities
             CreationDate = DateTime.UtcNow;
             State = EntityState.New;
             PersistedValues = [];
-            Observers = new List<IEntityObserver>();
+            Observers = [];
         }
 
         protected void InitializePersistedValues(IBaseEntity entity)
@@ -106,7 +106,7 @@ namespace Best.Practices.Core.Domain.Entities
             }
         }
 
-        public bool PropertyIsUpdated(object propertyOldValue, object propertyNewValue)
+        public static bool PropertyIsUpdated(object propertyOldValue, object propertyNewValue)
         {
             var entityProperty = propertyNewValue as IBaseEntity;
 
@@ -146,7 +146,7 @@ namespace Best.Practices.Core.Domain.Entities
                     var oldPropertyValue = PersistedValues[property.Name];
                     var currentValue = property.GetValue(this, null);
 
-                    if (this.PropertyIsUpdated(oldPropertyValue, currentValue))
+                    if (PropertyIsUpdated(oldPropertyValue, currentValue))
                         updatedProperties[property.Name] = currentValue;
                 }
             }
@@ -235,14 +235,9 @@ namespace Best.Practices.Core.Domain.Entities
 
             var json = JToken.Parse(serialized);
 
-            if (json[nameof(Id)] != null)
-                json[nameof(Id)].Parent.Remove();
-
-            if (json[nameof(CreationDate)] != null)
-                json[nameof(CreationDate)].Parent.Remove();
-
-            if (json[nameof(State)] != null)
-                json[nameof(State)].Parent.Remove();
+            json[nameof(Id)]?.Parent.Remove();
+            json[nameof(CreationDate)]?.Parent.Remove();
+            json[nameof(State)]?.Parent.Remove();
 
             JsonConvert.PopulateObject(json.ToString(), this);
         }

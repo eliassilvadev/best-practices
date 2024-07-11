@@ -15,16 +15,16 @@ namespace Best.Practices.Core.Tests.Application.UseCases
 {
     public class GetPaginatedResultsUseCaseTests
     {
-        private readonly GetPaginatedResultsUseCase<ICqrsQueryProvider<SampleChildUseCaseOutput>, SampleChildUseCaseOutput> _useCase;
+        private readonly GetPaginatedResultsUseCase<IListItemOutputCqrsQueryProvider<SampleChildUseCaseOutput>, SampleChildUseCaseOutput> _useCase;
         private readonly Mock<IValidator<GetPaginatedResultsInput>> _inputValidator;
-        private readonly Mock<ICqrsQueryProvider<SampleChildUseCaseOutput>> _queryProvider;
+        private readonly Mock<IListItemOutputCqrsQueryProvider<SampleChildUseCaseOutput>> _queryProvider;
 
         public GetPaginatedResultsUseCaseTests()
         {
             _inputValidator = new Mock<IValidator<GetPaginatedResultsInput>>();
-            _queryProvider = new Mock<ICqrsQueryProvider<SampleChildUseCaseOutput>>();
+            _queryProvider = new Mock<IListItemOutputCqrsQueryProvider<SampleChildUseCaseOutput>>();
 
-            _useCase = new GetPaginatedResultsUseCase<ICqrsQueryProvider<SampleChildUseCaseOutput>, SampleChildUseCaseOutput>(
+            _useCase = new GetPaginatedResultsUseCase<IListItemOutputCqrsQueryProvider<SampleChildUseCaseOutput>, SampleChildUseCaseOutput>(
                 _inputValidator.Object,
                 _queryProvider.Object);
         }
@@ -79,7 +79,7 @@ namespace Best.Practices.Core.Tests.Application.UseCases
                 .Build();
 
             var input = new GetPaginatedResultsInputBuilder()
-                .WithFilters(new List<SearchFilterInput>() { filter })
+                .WithFilters([filter])
                 .WithPageNumber(1)
                 .WithItemsPerPage(10)
                 .Build();
